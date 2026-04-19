@@ -11,6 +11,7 @@ import {
 import NeoDose from './apps/NeoDose'
 import DripDrop from './apps/DripDrop'
 import TippingPoint from './apps/TippingPoint'
+import LytesOut from './apps/LytesOut'
 
 // Home Screen with grid of tools
 const Home = () => {
@@ -78,7 +79,7 @@ function App() {
         <Route path="/neodose" element={<NeoDose />} />
         <Route path="/tippingpoint" element={<TippingPoint />} />
         <Route path="/dripdrop" element={<DripDrop />} />
-        <Route path="/lytesout" element={<PlaceholderApp title="LytesOut" />} />
+        <Route path="/lytesout" element={<LytesOut />} />
         <Route path="/neurosnap" element={<PlaceholderApp title="NeuroSnap" />} />
         <Route path="/chartninja" element={<PlaceholderApp title="ChartNinja" />} />
       </Routes>
