@@ -10,6 +10,7 @@ import {
 } from 'lucide-react'
 import NeoDose from './apps/NeoDose'
 import TippingPoint from './apps/TippingPoint'
+import DripDrop from './apps/DripDrop'
 
 // Home Screen with grid of tools
 const Home = () => {
@@ -76,7 +77,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/neodose" element={<NeoDose />} />
         <Route path="/tippingpoint" element={<TippingPoint />} />
-        <Route path="/dripdrop" element={<PlaceholderApp title="DripDrop" />} />
+        <Route path="/dripdrop" element={<DripDrop />} />
         <Route path="/lytesout" element={<PlaceholderApp title="LytesOut" />} />
         <Route path="/neurosnap" element={<PlaceholderApp title="NeuroSnap" />} />
         <Route path="/chartninja" element={<PlaceholderApp title="ChartNinja" />} />
