@@ -189,24 +189,20 @@ function NumpadWeight({ value, onChange }: { value: number; onChange: (v: number
 
   const handleDigit = (d: string) => {
     setInputStr(prev => {
-      let next = prev
+      let next = active ? prev : String(value)
       if (d === '⌫') {
-        next = prev.length > 1 ? prev.slice(0, -1) : '0'
+        next = next.length > 1 ? next.slice(0, -1) : '0'
       } else if (d === '.') {
-        next = prev.includes('.') ? prev : prev + '.'
+        next = next.includes('.') ? next : next + '.'
       } else {
-        next = prev === '0' ? d : prev + d
-        if (next.length > 4) return prev
+        next = next === '0' ? d : next + d
+        if (next.length > 4) return active ? prev : String(value)
       }
       commit(next)
       return next
     })
     if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(8)
   }
-
-  useEffect(() => {
-    if (!active) setInputStr(String(value))
-  }, [value, active])
 
   const keys = ['7','8','9','4','5','6','1','2','3','.','0','⌫']
 
@@ -217,7 +213,7 @@ function NumpadWeight({ value, onChange }: { value: number; onChange: (v: number
           Manual Weight Entry
         </div>
         <div className="mt-2 text-3xl font-black tabular-nums text-white">
-          {inputStr}
+          {active ? inputStr : String(value)}
           <span className="ml-1 text-sm font-bold text-slate-500">kg</span>
         </div>
       </div>

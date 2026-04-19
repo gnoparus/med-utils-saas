@@ -23,20 +23,30 @@ const BAG_COLORS: Record<string, { fill: string; stroke: string; tube: string }>
 
 export function IVBagAnimation({ mlPerHr, dropsPerSec, color, glowRgb, isActive }: IVBagProps) {
   const [drops, setDrops] = useState<DropItem[]>([])
+  const [visibleFromId, setVisibleFromId] = useState(0)
   const nextIdRef = useRef(0)
 
   // Drip emitter
   useEffect(() => {
+    const startId = nextIdRef.current
+    const revealId = window.setTimeout(() => {
+      setVisibleFromId(startId)
+    }, 0)
+
     if (!isActive || mlPerHr <= 0) {
-      setDrops([])
-      return
+      return () => window.clearTimeout(revealId)
     }
+
     const intervalMs = Math.max(90, 1000 / dropsPerSec)
     const id = setInterval(() => {
       const newDrop: DropItem = { id: nextIdRef.current++ }
       setDrops(prev => [...prev.slice(-5), newDrop])
     }, intervalMs)
-    return () => clearInterval(id)
+
+    return () => {
+      window.clearTimeout(revealId)
+      clearInterval(id)
+    }
   }, [isActive, dropsPerSec, mlPerHr])
 
   const bc = BAG_COLORS[color] ?? BAG_COLORS.amber
@@ -45,6 +55,7 @@ export function IVBagAnimation({ mlPerHr, dropsPerSec, color, glowRgb, isActive 
   const fillY = 22 + (100 * (1 - fillPct / 100))
   const fillH = 100 * fillPct / 100
   const clipId = `bag-clip-${color}`
+  const visibleDrops = isActive ? drops.filter(drop => drop.id >= visibleFromId) : []
 
   return (
     <div className="flex flex-col items-center select-none pointer-events-none">
@@ -108,7 +119,7 @@ export function IVBagAnimation({ mlPerHr, dropsPerSec, color, glowRgb, isActive 
       {/* Drip Drops zone — below tube end */}
       <div className="relative" style={{ height: 60, width: 24, marginTop: -16 }}>
         <AnimatePresence>
-          {drops.map((drop) => (
+          {visibleDrops.map((drop) => (
             <motion.div
               key={drop.id}
               initial={{ y: 0, opacity: 1, scale: 0.7 }}
