@@ -13,6 +13,7 @@ import DripDrop from './apps/DripDrop'
 import TippingPoint from './apps/TippingPoint'
 import LytesOut from './apps/LytesOut'
 import NeuroSnap from './apps/NeuroSnap'
+import ChartNinja from './apps/ChartNinja'
 
 // Home Screen with grid of tools
 const Home = () => {
@@ -82,7 +83,7 @@ function App() {
         <Route path="/dripdrop" element={<DripDrop />} />
         <Route path="/lytesout" element={<LytesOut />} />
         <Route path="/neurosnap" element={<NeuroSnap />} />
-        <Route path="/chartninja" element={<PlaceholderApp title="ChartNinja" />} />
+        <Route path="/chartninja" element={<ChartNinja />} />
       </Routes>
     </BrowserRouter>
   )
