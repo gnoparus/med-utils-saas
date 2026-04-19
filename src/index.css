@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+@theme {
+  --color-slate-900: #0f172a;
+  --color-slate-950: #020617;
+  --color-neon-blue: #00f0ff;
+  --color-neon-pink: #ff0055;
+}
+
+@layer base {
+  body {
+    @apply bg-slate-950 text-slate-50 antialiased overflow-hidden select-none touch-none;
+    /* Prevent bouncy scroll on mobile apps completely */
+    overscroll-behavior-y: none;
+  }
+}
+
+/* Custom utilities for dopamine design */
+@layer utilities {
+  .glass {
+    @apply bg-slate-900/40 backdrop-blur-md border border-white/10;
+  }
+  .clickable {
+    @apply active:scale-95 transition-transform duration-100 ease-in-out;
+  }
+}
