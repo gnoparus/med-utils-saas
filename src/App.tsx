@@ -58,20 +58,6 @@ const Home = () => {
   )
 }
 
-// Placeholder for tools
-const PlaceholderApp = ({ title }: { title: string }) => (
-  <div className="h-screen w-screen flex flex-col items-center justify-center relative">
-    <Link to="/" className="absolute top-6 left-6 text-slate-400">
-      <div className="glass px-4 py-2 rounded-full text-sm font-semibold clickable hover:text-white">
-        &larr; Back
-      </div>
-    </Link>
-    <div className="glass p-8 rounded-3xl text-center border-dashed border-2 border-slate-700">
-      <h1 className="text-2xl font-bold mb-2">{title}</h1>
-      <p className="text-slate-500">Coming soon in phase 2.</p>
-    </div>
-  </div>
-)
 
 function App() {
   return (
