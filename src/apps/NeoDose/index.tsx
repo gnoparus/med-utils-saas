@@ -45,10 +45,9 @@ interface MedCardProps {
     locked?: boolean
   }
   index: number
-  bandColor: string
 }
 
-function MedCard({ med, index, bandColor }: MedCardProps) {
+function MedCard({ med, index }: MedCardProps) {
   const spring = useSpring(med.calcDose, { stiffness: 200, damping: 20 })
   const displayDose = useTransform(spring, v => v.toFixed(1))
 
@@ -156,7 +155,6 @@ function BroselowTape({ weight }: { weight: number }) {
   return (
     <div className="flex w-full h-3 rounded-full overflow-hidden gap-px">
       {BROSELOW_BANDS.map(band => {
-        const start = band.min - 3
         const size = band.max - band.min
         const isActive = weight >= band.min && weight < band.max
         return (
@@ -214,6 +212,15 @@ function NumpadWeight({ value, onChange }: { value: number; onChange: (v: number
 
   return (
     <div>
+      <div className="mb-3 rounded-2xl border border-white/8 bg-slate-950/80 px-4 py-3 text-center">
+        <div className="text-[10px] font-bold uppercase tracking-[0.28em] text-slate-500">
+          Manual Weight Entry
+        </div>
+        <div className="mt-2 text-3xl font-black tabular-nums text-white">
+          {inputStr}
+          <span className="ml-1 text-sm font-bold text-slate-500">kg</span>
+        </div>
+      </div>
       <div className="grid grid-cols-3 gap-2">
         {keys.map(k => (
           <motion.button
@@ -510,7 +517,7 @@ export default function NeoDose() {
 
         <AnimatePresence mode="wait">
           {freeMeds.map((med, i) => (
-            <MedCard key={med.name} med={med} index={i} bandColor={band.color} />
+            <MedCard key={med.name} med={med} index={i} />
           ))}
         </AnimatePresence>
 
@@ -523,7 +530,7 @@ export default function NeoDose() {
 
         <AnimatePresence mode="wait">
           {proMeds.map((med, i) => (
-            <MedCard key={med.name} med={med} index={freeMeds.length + i} bandColor={band.color} />
+            <MedCard key={med.name} med={med} index={freeMeds.length + i} />
           ))}
         </AnimatePresence>
 

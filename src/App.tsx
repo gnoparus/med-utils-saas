@@ -2,21 +2,18 @@ import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { 
   Baby, 
-  Activity, 
   Droplets, 
   Zap, 
   Brain, 
   FileText 
 } from 'lucide-react'
 import NeoDose from './apps/NeoDose'
-import TippingPoint from './apps/TippingPoint'
 import DripDrop from './apps/DripDrop'
 
 // Home Screen with grid of tools
 const Home = () => {
   const tools = [
     { title: 'NeoDose', path: '/neodose', icon: <Baby size={32} className="text-pink-400" />, desc: 'Peds Resuscitation', color: 'border-pink-500/30' },
-    { title: 'TippingPoint', path: '/tippingpoint', icon: <Activity size={32} className="text-cyan-400" />, desc: 'ABG Analyzer', color: 'border-cyan-500/30' },
     { title: 'DripDrop', path: '/dripdrop', icon: <Droplets size={32} className="text-blue-400" />, desc: 'IV Configurator', color: 'border-blue-500/30' },
     { title: 'LytesOut', path: '/lytesout', icon: <Zap size={32} className="text-yellow-400" />, desc: 'Electrolyte Guide', color: 'border-yellow-500/30' },
     { title: 'NeuroSnap', path: '/neurosnap', icon: <Brain size={32} className="text-purple-400" />, desc: 'GCS & NIHSS', color: 'border-purple-500/30' },
@@ -76,7 +73,6 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/neodose" element={<NeoDose />} />
-        <Route path="/tippingpoint" element={<TippingPoint />} />
         <Route path="/dripdrop" element={<DripDrop />} />
         <Route path="/lytesout" element={<PlaceholderApp title="LytesOut" />} />
         <Route path="/neurosnap" element={<PlaceholderApp title="NeuroSnap" />} />

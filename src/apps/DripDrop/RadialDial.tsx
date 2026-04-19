@@ -1,5 +1,5 @@
 import { useRef, useCallback } from 'react'
-import { motion, useMotionValue, useTransform } from 'framer-motion'
+import { motion } from 'framer-motion'
 
 interface RadialDialProps {
   value: number       // current dose
