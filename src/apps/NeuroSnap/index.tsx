@@ -9,7 +9,6 @@ import {
   RotateCcw,
   ChevronDown,
   ChevronUp,
-  Zap,
 } from 'lucide-react'
 import {
   GCS_CATEGORIES,
@@ -696,7 +695,6 @@ function NihssTab() {
   )
 
   const analysis = useMemo(() => analyzeNihss(scores), [scores])
-  const glow = GLOW[analysis.glowState]
 
   const handleSelect = useCallback((id: string, score: number) => {
     setScores(prev => ({ ...prev, [id]: score }))
