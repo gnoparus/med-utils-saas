@@ -518,14 +518,14 @@ export default function LytesOut() {
               <div className="text-[10px] font-bold uppercase tracking-[0.28em] text-slate-500 mb-3">
                 Repletion Protocol
               </div>
-                <div className="space-y-3">
-                  <AnimatePresence mode="sync">
+              <div className="space-y-3">
+                <AnimatePresence mode="sync">
                   {displayOptions.map((opt, i) => (
                     <RepleteCard key={`${activeId}-${opt.id}`} opt={opt} index={i} meta={meta} />
                   ))}
-                  </AnimatePresence>
-                </div>
+                </AnimatePresence>
               </div>
+            </div>
           )}
 
           {isNormal && (

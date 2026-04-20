@@ -124,7 +124,7 @@ export function useEntitlements() {
     }
   }, [])
 
-  const isPro = ALL_FEATURE_KEYS.some((key) => entitlements[key])
+  const hasAnyProFeature = ALL_FEATURE_KEYS.some((key) => entitlements[key])
 
-  return { entitlements, isLoading, isPro }
+  return { entitlements, isLoading, hasAnyProFeature }
 }
