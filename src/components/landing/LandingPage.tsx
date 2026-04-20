@@ -5,145 +5,19 @@ import type { LucideIcon } from 'lucide-react'
 import {
   Activity,
   ArrowRight,
-  Baby,
-  Brain,
   ChevronDown,
   Clock3,
   Copy,
-  Droplets,
-  FileText,
-  FlaskConical,
   Lock,
   ShieldCheck,
   Smartphone,
   WifiOff,
-  Zap,
 } from 'lucide-react'
+import { heroPreviewTools, shiftsideTools } from '../../content/shiftsideTools'
 
 const PAGE_TITLE = 'Shiftside | Fast Bedside Calculators and Chart-Ready Clinical Tools'
 const PAGE_DESCRIPTION =
   'Fast bedside calculators for dosing, drips, ABGs, neuro scoring, and chart-ready text. Mobile-first, offline-capable, and built for urgent clinical workflows.'
-
-type ToolCard = {
-  name: string
-  subtitle: string
-  description: string
-  usedIn: string
-  route: string
-  icon: LucideIcon
-  accent: string
-  rgb: string
-  preview: {
-    label: string
-    value: string
-    helper: string
-    chips: string[]
-    action: string
-    footer: string
-  }
-}
-
-const toolCards: ToolCard[] = [
-  {
-    name: 'Shiftside Dose',
-    subtitle: 'Pediatric and weight-based dosing',
-    description: 'Weight-based meds, resus dosing, and quick pediatric calculations without bedside arithmetic.',
-    usedIn: 'ER / Pediatrics',
-    route: '/neodose',
-    icon: Baby,
-    accent: '#67e8f9',
-    rgb: '103,232,249',
-    preview: {
-      label: 'Weight',
-      value: '18 kg',
-      helper: 'Code blue essentials ready',
-      chips: ['Epi 0.18 mg', 'Fluid 360 mL', 'Shock 36 J'],
-      action: 'Copy dosing',
-      footer: 'Built for resus moments',
-    },
-  },
-  {
-    name: 'Shiftside Drips',
-    subtitle: 'IV and pressor rate calculator',
-    description: 'Convert mcg/kg/min into pump-ready rates with concentration-aware logic and faster bedside checks.',
-    usedIn: 'ER / ICU',
-    route: '/dripdrop',
-    icon: Droplets,
-    accent: '#7dd3fc',
-    rgb: '125,211,252',
-    preview: {
-      label: 'Norepi',
-      value: '18.9 mL/hr',
-      helper: '0.12 mcg/kg/min at 70 kg',
-      chips: ['Immediate rate', 'Concentration aware', 'Copy for chart'],
-      action: 'Open drips',
-      footer: 'Thumb-first titration',
-    },
-  },
-  {
-    name: 'Shiftside Neuro',
-    subtitle: 'GCS, NIHSS, and neuro scoring',
-    description: 'Tap through neuro checks quickly with mobile scoring that keeps the total and interpretation in view.',
-    usedIn: 'ER / ICU / Wards',
-    route: '/neurosnap',
-    icon: Brain,
-    accent: '#86efac',
-    rgb: '134,239,172',
-    preview: {
-      label: 'GCS',
-      value: '11 / 15',
-      helper: 'Eyes 3 · Verbal 3 · Motor 5',
-      chips: ['Running total', 'Readable severity', 'No form hunting'],
-      action: 'Score exam',
-      footer: 'Designed for one-handed use',
-    },
-  },
-  {
-    name: 'Shiftside Notes',
-    subtitle: 'Chart-ready clinical text',
-    description: 'Turn scores and calculators into reusable chart language without breaking focus or switching contexts.',
-    usedIn: 'ER / Wards',
-    route: '/chartninja',
-    icon: FileText,
-    accent: '#fca5a5',
-    rgb: '252,165,165',
-    preview: {
-      label: 'Chart-ready',
-      value: 'Ready to copy',
-      helper: 'Assessment phrasing generated',
-      chips: ['WELLS low risk', 'GCS sentence', 'Electrolyte plan'],
-      action: 'Copy note',
-      footer: 'From result to note in seconds',
-    },
-  },
-]
-
-const allModules = [
-  toolCards[0],
-  {
-    name: 'Shiftside ABG',
-    subtitle: 'Acid-base and blood gas analysis',
-    description: 'Interpret acid-base patterns and compensation faster when the gas needs a quick read.',
-    usedIn: 'ER / ICU',
-    route: '/tippingpoint',
-    icon: FlaskConical,
-    accent: '#fdba74',
-    rgb: '253,186,116',
-  },
-  toolCards[1],
-  {
-    name: 'Shiftside Lytes',
-    subtitle: 'Electrolyte repletion guidance',
-    description: 'Move from abnormal values to bedside repletion guidance without digging through protocols.',
-    usedIn: 'ICU / Wards',
-    route: '/lytesout',
-    icon: Zap,
-    accent: '#fcd34d',
-    rgb: '252,211,77',
-  },
-  toolCards[2],
-  toolCards[3],
-]
 
 const outcomeCards = [
   {
@@ -328,12 +202,12 @@ function GhostButton({
 
 function HeroPreview() {
   const [activeIndex, setActiveIndex] = useState(0)
-  const activeCard = toolCards[activeIndex]
+  const activeCard = heroPreviewTools[activeIndex]
   const ActiveIcon = activeCard.icon
 
   useEffect(() => {
     const interval = window.setInterval(() => {
-      setActiveIndex((current) => (current + 1) % toolCards.length)
+      setActiveIndex((current) => (current + 1) % heroPreviewTools.length)
     }, 3200)
 
     return () => window.clearInterval(interval)
@@ -365,7 +239,7 @@ function HeroPreview() {
         </div>
 
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-          {toolCards.map((tool, index) => {
+          {heroPreviewTools.map((tool, index) => {
             const Icon = tool.icon
             const isActive = index === activeIndex
 
@@ -697,7 +571,7 @@ export default function LandingPage() {
           />
 
           <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {allModules.map((tool, index) => {
+            {shiftsideTools.map((tool, index) => {
               const Icon = tool.icon
 
               return (
@@ -989,7 +863,7 @@ export default function LandingPage() {
           <div>
             <div className="text-[11px] font-semibold uppercase tracking-[0.28em] text-slate-500">Product links</div>
             <div className="mt-4 grid gap-2 text-sm text-slate-300">
-              {allModules.map((module) => (
+              {shiftsideTools.map((module) => (
                 <Link key={module.name} to={module.route} className="transition-colors hover:text-white">
                   {module.name}
                 </Link>

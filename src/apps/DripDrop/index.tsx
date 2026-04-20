@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react'
-import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Copy, Check, Lock, AlertTriangle, Zap, BadgeAlert } from 'lucide-react'
+import { AppShellHeader } from '../../components/app-shell'
 import {
   PRESSOR_DRUGS,
   calculateRate,
@@ -302,24 +302,7 @@ export default function DripDrop() {
       </AnimatePresence>
 
       <div className="relative flex h-full flex-col">
-        {/* ── Header ── */}
-        <div className="shrink-0 px-4 pt-12 pb-4">
-          <div className="flex items-center justify-between">
-            <Link to="/" className="glass rounded-full px-4 py-2 text-sm font-semibold text-slate-400 hover:text-white">
-              ← Back
-            </Link>
-            <div className="text-center">
-              <div className="flex items-center justify-center gap-1.5">
-                <span className="text-lg leading-none">💧</span>
-                <h1 className="text-lg font-black tracking-tight text-white">Shiftside Drips</h1>
-              </div>
-              <p className="mt-0.5 text-[10px] font-bold uppercase tracking-[0.28em] text-slate-500">
-                IV and pressor rate calculator
-              </p>
-            </div>
-            <div className="w-20" />
-          </div>
-        </div>
+        <AppShellHeader toolId="drips" />
 
         {/* ── Drug Selector strip ── */}
         <div className="shrink-0 mb-3">

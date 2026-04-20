@@ -1,5 +1,4 @@
 import { useState, useMemo, useCallback } from 'react'
-import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Check,
@@ -8,9 +7,9 @@ import {
   ChevronDown,
   ChevronUp,
   RotateCcw,
-  Zap,
   Lock,
 } from 'lucide-react'
+import { AppShellHeader } from '../../components/app-shell'
 import {
   NOTE_TEMPLATES,
   countFilledFields,
@@ -518,37 +517,22 @@ export default function ChartNinja() {
   )
 
   const glowKey = TEMPLATE_GLOW[selectedTemplate.id] ?? 'sky'
-  const glow = GLOW[glowKey]
 
   return (
     <div className="h-screen w-screen flex flex-col text-slate-100 overflow-hidden">
-      {/* ── Header ─────────────────────────────────────────────────────── */}
-      <div className="shrink-0 px-6 pt-12 pb-4 flex items-center justify-between">
-        <Link
-          to="/"
-          className="text-slate-400 hover:text-white glass px-4 py-2 rounded-full text-sm font-semibold clickable"
-        >
-          ← Back
-        </Link>
-
-        <div className="flex items-center gap-2">
-          <div
-            className="flex h-9 w-9 items-center justify-center rounded-2xl"
-            style={{ background: glow.panel, border: `1px solid ${glow.border}` }}
-          >
-            <Zap size={16} style={{ color: glow.accent }} />
+      <AppShellHeader
+        toolId="notes"
+        rightSlot={
+          <div aria-label="Template completion progress">
+            <CompletionRing
+              filled={filledCount}
+              total={selectedTemplate.fields.length}
+              glowKey={glowKey}
+              complete={complete}
+            />
           </div>
-          <span className="font-black text-lg tracking-tight text-white">Shiftside Notes</span>
-        </div>
-
-        {/* Completion ring */}
-        <CompletionRing
-          filled={filledCount}
-          total={selectedTemplate.fields.length}
-          glowKey={glowKey}
-          complete={complete}
-        />
-      </div>
+        }
+      />
 
       {/* ── Template selector ──────────────────────────────────────────── */}
       <div className="shrink-0 mb-4">

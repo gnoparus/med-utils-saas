@@ -1,5 +1,4 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
-import { Link } from "react-router-dom";
 import {
   motion,
   AnimatePresence,
@@ -15,6 +14,7 @@ import {
   ChevronRight,
   Lock,
 } from "lucide-react";
+import { AppShellHeader } from "../../components/app-shell";
 
 // ─── Broselow Band Data ───────────────────────────────────────────────────────
 const BROSELOW_BANDS = [
@@ -479,9 +479,11 @@ export default function NeoDose() {
       className="h-screen w-screen flex flex-col overflow-hidden"
       style={{ background: "hsl(222,40%,5%)" }}
     >
+      <AppShellHeader toolId="dose" />
+
       {/* ── Broselow color hero header ─────────────────────────── */}
       <motion.div
-        className="shrink-0 pt-12 pb-5 px-5 relative overflow-hidden"
+        className="shrink-0 px-5 pb-5 relative overflow-hidden"
         animate={{ borderBottomColor: band.border }}
         style={{ borderBottom: `1px solid ${band.border}` }}
       >
@@ -493,26 +495,6 @@ export default function NeoDose() {
           }}
           transition={{ duration: 0.6 }}
         />
-
-        {/* Top nav */}
-        <div className="flex items-center justify-between mb-5 relative z-10">
-          <Link
-            to="/"
-            className="flex items-center gap-1.5 text-slate-400 hover:text-white transition-colors glass px-4 py-2 rounded-full text-sm font-semibold"
-            style={{ border: "1px solid rgba(255,255,255,0.08)" }}
-          >
-            ← Back
-          </Link>
-          <div className="text-center">
-            <h1 className="font-black text-lg tracking-tight text-white">
-              Shiftside Dose
-            </h1>
-            <p className="text-[10px] text-slate-500 uppercase tracking-widest font-semibold">
-              Pediatric and weight-based dosing
-            </p>
-          </div>
-          <div className="w-20" />
-        </div>
 
         {/* Weight display + slider */}
         <div className="relative z-10">

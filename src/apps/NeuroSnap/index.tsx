@@ -1,8 +1,6 @@
 import { useState, useMemo, useEffect, useCallback } from 'react'
-import { Link } from 'react-router-dom'
 import { motion, AnimatePresence, useSpring, useTransform } from 'framer-motion'
 import {
-  Brain,
   Check,
   Copy,
   Lock,
@@ -10,6 +8,7 @@ import {
   ChevronDown,
   ChevronUp,
 } from 'lucide-react'
+import { AppShellHeader } from '../../components/app-shell'
 import {
   GCS_CATEGORIES,
   NIHSS_CATEGORIES,
@@ -845,27 +844,7 @@ export default function NeuroSnap() {
       </AnimatePresence>
 
       <div className="relative flex h-full flex-col">
-        {/* ── Header ── */}
-        <div className="shrink-0 px-4 pt-12 pb-4">
-          <div className="flex items-center justify-between">
-            <Link
-              to="/"
-              className="glass rounded-full px-4 py-2 text-sm font-semibold text-slate-400 hover:text-white"
-            >
-              ← Back
-            </Link>
-            <div className="text-center">
-              <div className="flex items-center justify-center gap-2">
-                <Brain size={17} className="text-purple-400" />
-                <h1 className="text-lg font-black tracking-tight text-white">Shiftside Neuro</h1>
-              </div>
-              <p className="mt-0.5 text-[10px] font-bold uppercase tracking-[0.28em] text-slate-500">
-                GCS, NIHSS, and neuro scoring
-              </p>
-            </div>
-            <div className="w-20" />
-          </div>
-        </div>
+        <AppShellHeader toolId="neuro" />
 
         {/* ── Mode tab strip ── */}
         <div className="shrink-0 px-4 mb-4">
