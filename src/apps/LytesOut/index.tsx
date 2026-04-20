@@ -15,6 +15,7 @@ import {
 import { AppShellHeader } from '../../components/app-shell'
 import { trackToolOpened, trackFirstResultCompleted, trackPaywallViewed, trackCheckoutStarted } from '../../lib/analytics'
 import { STRIPE_MONTHLY_URL } from '../../lib/billing'
+import { useEntitlements } from '../../lib/use-entitlements'
 import {
   GLOW_COLORS,
   LYTE_PRESETS,
@@ -298,6 +299,7 @@ function AnimatedValue({ value, meta }: { value: number; meta: ElectrolyteMeta }
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export default function LytesOut() {
+  const { entitlements } = useEntitlements()
   const [activeId, setActiveId] = useState<ElectrolyteId>('k')
   const [rawInputs, setRawInputs] = useState<Record<ElectrolyteId, string>>({
 
@@ -313,6 +315,11 @@ export default function LytesOut() {
   const rawValue = rawInputs[activeId]
   const parsedValue = useMemo(() => parseValue(rawValue, meta), [rawValue, meta])
   const analysis: ElectrolyteAnalysis = useMemo(() => analyzeLyte(activeId, parsedValue), [activeId, parsedValue])
+  const hasProAccess = entitlements.lytesAdvancedProtocols
+  const displayOptions = useMemo(
+    () => (hasProAccess ? analysis.options.map((opt) => ({ ...opt, locked: false })) : analysis.options),
+    [analysis.options, hasProAccess]
+  )
   const glow = GLOW_COLORS[analysis.glowState]
 
   useEffect(() => { trackToolOpened('lytes') }, [])
@@ -326,6 +333,7 @@ export default function LytesOut() {
   }, [parsedValue])
 
   useEffect(() => {
+    if (hasProAccess) return
     const el = paywallRef.current
     if (!el) return
     const observer = new IntersectionObserver(
@@ -339,7 +347,7 @@ export default function LytesOut() {
     )
     observer.observe(el)
     return () => observer.disconnect()
-  }, [])
+  }, [hasProAccess])
 
   const handleKey = (key: string) => {
     triggerHaptic(8)
@@ -510,19 +518,19 @@ export default function LytesOut() {
               <div className="text-[10px] font-bold uppercase tracking-[0.28em] text-slate-500 mb-3">
                 Repletion Protocol
               </div>
-              <div className="space-y-3">
-                <AnimatePresence mode="sync">
-                  {analysis.options.map((opt, i) => (
+                <div className="space-y-3">
+                  <AnimatePresence mode="sync">
+                  {displayOptions.map((opt, i) => (
                     <RepleteCard key={`${activeId}-${opt.id}`} opt={opt} index={i} meta={meta} />
                   ))}
-                </AnimatePresence>
+                  </AnimatePresence>
+                </div>
               </div>
-            </div>
           )}
 
           {isNormal && (
             <div className="space-y-3 mb-4">
-              {analysis.options.map((opt, i) => (
+              {displayOptions.map((opt, i) => (
                 <RepleteCard key={`${activeId}-${opt.id}`} opt={opt} index={i} meta={meta} />
               ))}
             </div>
@@ -556,43 +564,45 @@ export default function LytesOut() {
           </button>
 
           {/* ── Pro upsell ── */}
-          <div ref={paywallRef} className="relative overflow-hidden rounded-[1.8rem] border border-yellow-400/18 bg-yellow-500/5 p-5 mb-4">
-            <div
-              className="absolute inset-0 pointer-events-none"
-              style={{
-                background: 'radial-gradient(circle at top right, rgba(234,179,8,0.14), transparent 40%)',
-              }}
-            />
-            <div className="relative flex items-center gap-2 text-yellow-300 mb-3">
-              <Zap size={16} />
-              <div className="text-[11px] font-black uppercase tracking-[0.26em]">Shiftside Pro</div>
-            </div>
-            <div className="relative grid grid-cols-2 gap-2 blur-[1.5px] pointer-events-none mb-4">
-              {['Weight-Based Dosing', 'Anion Gap & ΔΔ', 'Refeeding Protocol', 'Corrected Ca'].map(f => (
-                <div key={f} className="rounded-2xl border border-yellow-300/14 bg-slate-950/70 px-3 py-3">
-                  <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-yellow-200/70">{f}</div>
+          {!hasProAccess && (
+            <div ref={paywallRef} className="relative overflow-hidden rounded-[1.8rem] border border-yellow-400/18 bg-yellow-500/5 p-5 mb-4">
+              <div
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                  background: 'radial-gradient(circle at top right, rgba(234,179,8,0.14), transparent 40%)',
+                }}
+              />
+              <div className="relative flex items-center gap-2 text-yellow-300 mb-3">
+                <Zap size={16} />
+                <div className="text-[11px] font-black uppercase tracking-[0.26em]">Shiftside Pro</div>
+              </div>
+              <div className="relative grid grid-cols-2 gap-2 blur-[1.5px] pointer-events-none mb-4">
+                {['Weight-Based Dosing', 'Anion Gap & ΔΔ', 'Refeeding Protocol', 'Corrected Ca'].map(f => (
+                  <div key={f} className="rounded-2xl border border-yellow-300/14 bg-slate-950/70 px-3 py-3">
+                    <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-yellow-200/70">{f}</div>
+                  </div>
+                ))}
+              </div>
+              <a
+                href={STRIPE_MONTHLY_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => trackCheckoutStarted('monthly')}
+                className="relative flex items-start gap-3 rounded-[1.4rem] border border-yellow-300/18 bg-slate-950/75 p-4 no-underline"
+              >
+                <Lock size={16} className="mt-0.5 shrink-0 text-yellow-300" />
+                <div>
+                  <div className="text-sm font-black text-yellow-100">Unlock Shiftside Pro</div>
+                  <p className="mt-1 text-xs leading-relaxed text-yellow-50/75">
+                    Weight-based IV protocols, anion gap, corrected calcium, refeeding syndrome tracker, and IV compatibility checker.
+                  </p>
                 </div>
-              ))}
+                <div className="ml-auto shrink-0 rounded-full bg-yellow-300 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-950">
+                  Upgrade
+                </div>
+              </a>
             </div>
-            <a
-              href={STRIPE_MONTHLY_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => trackCheckoutStarted('monthly')}
-              className="relative flex items-start gap-3 rounded-[1.4rem] border border-yellow-300/18 bg-slate-950/75 p-4 no-underline"
-            >
-              <Lock size={16} className="mt-0.5 shrink-0 text-yellow-300" />
-              <div>
-                <div className="text-sm font-black text-yellow-100">Unlock Shiftside Pro</div>
-                <p className="mt-1 text-xs leading-relaxed text-yellow-50/75">
-                  Weight-based IV protocols, anion gap, corrected calcium, refeeding syndrome tracker, and IV compatibility checker.
-                </p>
-              </div>
-              <div className="ml-auto shrink-0 rounded-full bg-yellow-300 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-950">
-                Upgrade
-              </div>
-            </a>
-          </div>
+          )}
 
           {/* ── Safety disclaimer ── */}
           <div className="rounded-[1.6rem] border border-red-400/16 bg-red-500/5 px-4 py-3 text-xs leading-relaxed text-slate-400">

@@ -10,6 +10,7 @@ import {
 } from 'lucide-react'
 import { AppShellHeader } from '../../components/app-shell'
 import { trackToolOpened, trackFirstResultCompleted } from '../../lib/analytics'
+import { useEntitlements } from '../../lib/use-entitlements'
 import {
   GCS_CATEGORIES,
   NIHSS_CATEGORIES,
@@ -694,9 +695,7 @@ function GcsTab() {
 
 // ─── NIHSS Tab ────────────────────────────────────────────────────────────────
 
-function NihssTab() {
-  const LOCKED = true // Pro feature: $19.99 unlock
-
+function NihssTab({ locked }: { locked: boolean }) {
   const [scores, setScores] = useState<Record<string, number>>(
     () => Object.fromEntries(NIHSS_CATEGORIES.map(c => [c.id, 0]))
   )
@@ -715,7 +714,7 @@ function NihssTab() {
   return (
     <div className="relative flex flex-col gap-4">
       {/* Lock overlay */}
-      {LOCKED && (
+      {locked && (
         <div className="absolute inset-0 z-30 flex flex-col items-center justify-start rounded-3xl backdrop-blur-sm bg-slate-950/70 px-6 pt-10">
           <motion.div
             initial={{ opacity: 0, y: 16 }}
@@ -817,7 +816,9 @@ function NihssTab() {
 type Mode = 'gcs' | 'nihss'
 
 export default function NeuroSnap({ embedded }: { embedded?: boolean } = {}) {
+  const { entitlements } = useEntitlements()
   const [mode, setMode] = useState<Mode>('gcs')
+  const hasProAccess = entitlements.neuroNihss
 
   useEffect(() => { trackToolOpened('neuro') }, [])
 
@@ -863,7 +864,7 @@ export default function NeuroSnap({ embedded }: { embedded?: boolean } = {}) {
           >
             {([
               { id: 'gcs', label: 'GCS', badge: '/15', accent: '#a78bfa', rgb: '167,139,250' },
-              { id: 'nihss', label: 'NIHSS', badge: '/42', accent: '#9333ea', rgb: '147,51,234', locked: true },
+              { id: 'nihss', label: 'NIHSS', badge: '/42', accent: '#9333ea', rgb: '147,51,234', locked: !hasProAccess },
             ] as const).map(tab => {
               const isActive = mode === tab.id
               return (
@@ -917,7 +918,7 @@ export default function NeuroSnap({ embedded }: { embedded?: boolean } = {}) {
                 exit={{ opacity: 0, x: 16 }}
                 transition={{ type: 'spring', stiffness: 300, damping: 28 }}
               >
-                <NihssTab />
+                <NihssTab locked={!hasProAccess} />
               </motion.div>
             )}
           </AnimatePresence>

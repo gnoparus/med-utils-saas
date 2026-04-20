@@ -25,7 +25,7 @@ import { trackCheckoutStarted, trackLandingCtaClicked } from '../../lib/analytic
 
 const PAGE_TITLE = 'Shiftside | Fastest Bedside Drip Workflow on Mobile'
 const PAGE_DESCRIPTION =
-  'Calculate IV drip rates in seconds. Norepi, epi, dopamine and more — mcg/kg/min to mL/hr, concentration-aware, offline. Free. No login.'
+  'Calculate IV drip rates in seconds. Norepi, epi, dopamine and more — mcg/kg/min to mL/hr, concentration-aware, offline. Free tier available with passwordless sign-in for Pro.'
 
 // Index of DripDrop in heroPreviewTools (tools with .preview defined: Dose=0, Drips=1)
 const DRIPS_HERO_INDEX = 1
@@ -134,7 +134,7 @@ const faqItems = [
   },
 ]
 
-const trustPills = ['No login', 'Works offline', 'No patient data stored', 'Built for phone use']
+const trustPills = ['Passwordless sign-in', 'Works offline', 'No patient data stored', 'Built for phone use']
 
 function ensureDescriptionMeta() {
   let meta = document.querySelector('meta[name="description"]') as HTMLMetaElement | null
