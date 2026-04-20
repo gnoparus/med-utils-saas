@@ -385,10 +385,10 @@ export default function LytesOut() {
             <div className="text-center">
               <div className="flex items-center justify-center gap-2">
                 <Zap size={17} className="text-yellow-400" />
-                <h1 className="text-lg font-black tracking-tight text-white">LytesOut</h1>
+                <h1 className="text-lg font-black tracking-tight text-white">Shiftside Lytes</h1>
               </div>
               <p className="mt-0.5 text-[10px] font-bold uppercase tracking-[0.28em] text-slate-500">
-                Electrolyte Repletion Guide
+                Electrolyte repletion guidance
               </p>
             </div>
             <div className="w-20" />
@@ -553,7 +553,7 @@ export default function LytesOut() {
             />
             <div className="relative flex items-center gap-2 text-yellow-300 mb-3">
               <Zap size={16} />
-              <div className="text-[11px] font-black uppercase tracking-[0.26em]">LytesOut Pro</div>
+              <div className="text-[11px] font-black uppercase tracking-[0.26em]">Shiftside Pro</div>
             </div>
             <div className="relative grid grid-cols-2 gap-2 blur-[1.5px] pointer-events-none mb-4">
               {['Weight-Based Dosing', 'Anion Gap & ΔΔ', 'Refeeding Protocol', 'Corrected Ca'].map(f => (
@@ -565,13 +565,13 @@ export default function LytesOut() {
             <div className="relative flex items-start gap-3 rounded-[1.4rem] border border-yellow-300/18 bg-slate-950/75 p-4">
               <Lock size={16} className="mt-0.5 shrink-0 text-yellow-300" />
               <div>
-                <div className="text-sm font-black text-yellow-100">Unlock precision dosing</div>
+                <div className="text-sm font-black text-yellow-100">Unlock Shiftside Pro</div>
                 <p className="mt-1 text-xs leading-relaxed text-yellow-50/75">
                   Weight-based IV protocols, anion gap, corrected calcium, refeeding syndrome tracker, and IV compatibility checker.
                 </p>
               </div>
               <div className="ml-auto shrink-0 rounded-full bg-yellow-300 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-950">
-                $9.99
+                Full toolkit
               </div>
             </div>
           </div>

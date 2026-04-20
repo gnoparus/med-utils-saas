@@ -311,10 +311,10 @@ export default function DripDrop() {
             <div className="text-center">
               <div className="flex items-center justify-center gap-1.5">
                 <span className="text-lg leading-none">💧</span>
-                <h1 className="text-lg font-black tracking-tight text-white">DripDrop</h1>
+                <h1 className="text-lg font-black tracking-tight text-white">Shiftside Drips</h1>
               </div>
               <p className="mt-0.5 text-[10px] font-bold uppercase tracking-[0.28em] text-slate-500">
-                Pressor &amp; IV Rate Calculator
+                IV and pressor rate calculator
               </p>
             </div>
             <div className="w-20" />
@@ -508,7 +508,7 @@ export default function DripDrop() {
             <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(circle at top right, rgba(59,130,246,0.14), transparent 40%)' }} />
             <div className="relative flex items-center gap-2 text-blue-300 mb-3">
               <Lock size={14} />
-              <div className="text-[11px] font-black uppercase tracking-[0.26em]">DripDrop Pro</div>
+              <div className="text-[11px] font-black uppercase tracking-[0.26em]">Shiftside Pro</div>
             </div>
             <div className="relative grid grid-cols-2 gap-2 blur-[1.5px] pointer-events-none mb-4">
               {['Custom Concentrations', 'Saved Drug Profiles', 'Titration Log', 'Weight-Based Targets'].map((f) => (
@@ -520,13 +520,13 @@ export default function DripDrop() {
             <div className="relative flex items-start gap-3 rounded-[1.4rem] border border-blue-300/18 bg-slate-950/75 p-4">
               <Lock size={16} className="mt-0.5 shrink-0 text-blue-300" />
               <div>
-                <div className="text-sm font-black text-blue-100">Unlock precision dosing</div>
+                <div className="text-sm font-black text-blue-100">Unlock Shiftside Pro</div>
                 <p className="mt-1 text-xs leading-relaxed text-blue-50/75">
                   {activeDrug.premiumConcs.length} custom concentrations for {activeDrug.name}, titration history, and saved profiles.
                 </p>
               </div>
               <div className="ml-auto shrink-0 rounded-full bg-blue-300 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-950">
-                $4.99
+                Full toolkit
               </div>
             </div>
           </div>

@@ -538,7 +538,7 @@ export default function ChartNinja() {
           >
             <Zap size={16} style={{ color: glow.accent }} />
           </div>
-          <span className="font-black text-lg tracking-tight text-white">ChartNinja</span>
+          <span className="font-black text-lg tracking-tight text-white">Shiftside Notes</span>
         </div>
 
         {/* Completion ring */}
@@ -639,9 +639,9 @@ export default function ChartNinja() {
             <Lock size={16} className="text-purple-400" />
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-xs font-black text-slate-100">ChartNinja Pro</div>
+            <div className="text-xs font-black text-slate-100">Shiftside Pro</div>
             <div className="text-[11px] text-slate-500 mt-0.5 leading-snug">
-              Custom templates, AI-assisted HPI, voice dictation &amp; EHR direct export.
+              Custom templates, expanded bedside documentation modes, voice dictation, and export tools.
             </div>
           </div>
           <motion.button
@@ -654,7 +654,7 @@ export default function ChartNinja() {
               color: '#a78bfa',
             }}
           >
-            Unlock
+            Unlock Pro
           </motion.button>
         </div>
       </div>

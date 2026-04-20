@@ -39,8 +39,8 @@ describe("LytesOut UI", () => {
       </MemoryRouter>,
     );
 
-    // Header visible (use heading role to avoid matching 'LytesOut Pro')
-    expect(screen.getByRole("heading", { name: /LytesOut/i })).toBeTruthy();
+    // Header visible (use heading role to avoid matching the Pro teaser)
+    expect(screen.getByRole("heading", { name: /Shiftside Lytes/i })).toBeTruthy();
 
     // Click Magnesium tab (label in UI is 'Mg²⁺')
     const mgTab = screen.getByText("Mg²⁺");

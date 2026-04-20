@@ -609,10 +609,10 @@ export default function TippingPoint() {
             <div className="text-center">
               <div className="flex items-center justify-center gap-2">
                 <Droplets size={18} className="text-rose-400" />
-                <h1 className="text-lg font-black tracking-tight text-white">TippingPoint</h1>
+                <h1 className="text-lg font-black tracking-tight text-white">Shiftside ABG</h1>
               </div>
               <p className="mt-0.5 text-[10px] font-bold uppercase tracking-[0.28em] text-slate-500">
-                Visual ABG Analyzer
+                Acid-base and blood gas analysis
               </p>
             </div>
             <div className="w-20" />
@@ -697,13 +697,13 @@ export default function TippingPoint() {
               <div className="relative mt-4 flex items-start gap-3 rounded-[1.4rem] border border-amber-300/16 bg-slate-950/75 p-4">
                 <Lock size={18} className="mt-0.5 shrink-0 text-amber-300" />
                 <div>
-                  <div className="text-sm font-black text-amber-100">Unlock advanced gap workups</div>
+                  <div className="text-sm font-black text-amber-100">Unlock Shiftside Pro</div>
                   <p className="mt-1 text-sm leading-relaxed text-amber-50/80">
                     Add anion gap, delta gap, corrected bicarbonate, osmolar gap inputs, and the full mixed-disorder layer.
                   </p>
                 </div>
                 <div className="ml-auto rounded-full bg-amber-300 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-950">
-                  $9.99
+                  Full toolkit
                 </div>
               </div>
             </div>

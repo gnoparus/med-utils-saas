@@ -7,20 +7,63 @@
   --color-neon-pink: #ff0055;
 }
 
+:root {
+  --page-bg: #07111d;
+  --surface-border: rgba(255, 255, 255, 0.09);
+  --surface-panel: rgba(9, 15, 28, 0.74);
+  font-family: "IBM Plex Sans", "Avenir Next", "Segoe UI", sans-serif;
+}
+
 @layer base {
+  html {
+    scroll-behavior: smooth;
+    background: var(--page-bg);
+  }
+
   body {
-    @apply bg-slate-950 text-slate-50 antialiased overflow-hidden select-none touch-none;
-    /* Prevent bouncy scroll on mobile apps completely */
-    overscroll-behavior-y: none;
+    @apply text-slate-50 antialiased overflow-x-hidden;
+    min-height: 100vh;
+    background:
+      radial-gradient(circle at top, rgba(103, 232, 249, 0.1), transparent 28%),
+      linear-gradient(180deg, #08111c 0%, #050b14 48%, #04070f 100%);
+    overscroll-behavior-y: auto;
+  }
+
+  #root {
+    min-height: 100vh;
+  }
+
+  a,
+  button,
+  input,
+  textarea,
+  select {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  ::selection {
+    background: rgba(103, 232, 249, 0.22);
+    color: white;
   }
 }
 
-/* Custom utilities for dopamine design */
 @layer utilities {
+  .font-display {
+    font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+    letter-spacing: -0.04em;
+  }
+
   .glass {
     @apply bg-slate-900/40 backdrop-blur-md border border-white/10;
   }
+
   .clickable {
     @apply active:scale-95 transition-transform duration-100 ease-in-out;
+  }
+
+  .panel-surface {
+    background: var(--surface-panel);
+    border: 1px solid var(--surface-border);
+    backdrop-filter: blur(18px);
   }
 }

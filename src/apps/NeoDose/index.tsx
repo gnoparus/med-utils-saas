@@ -172,7 +172,7 @@ function MedCard({ med, index }: MedCardProps) {
         <div className="absolute inset-0 rounded-3xl z-20 backdrop-blur-sm bg-slate-950/60 flex flex-col items-center justify-center gap-2">
           <Lock size={20} className="text-slate-400" />
           <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">
-            Pro Only
+            Shiftside Pro
           </span>
         </div>
       )}
@@ -505,10 +505,10 @@ export default function NeoDose() {
           </Link>
           <div className="text-center">
             <h1 className="font-black text-lg tracking-tight text-white">
-              NeoDose
+              Shiftside Dose
             </h1>
             <p className="text-[10px] text-slate-500 uppercase tracking-widest font-semibold">
-              Peds Resuscitation
+              Pediatric and weight-based dosing
             </p>
           </div>
           <div className="w-20" />
@@ -696,7 +696,7 @@ export default function NeoDose() {
           </span>
           <div className="flex-1 h-px bg-slate-800" />
           <span className="text-[10px] text-amber-400 font-bold uppercase tracking-widest bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-full">
-            Pro
+            Shiftside Pro
           </span>
         </div>
 
@@ -728,9 +728,9 @@ export default function NeoDose() {
               transition={{ duration: 2.5, repeat: Infinity, ease: "linear" }}
             />
             <Lock size={16} className="text-purple-300" />
-            <span className="text-slate-100">Unlock Advanced Pharmacy</span>
+            <span className="text-slate-100">Unlock Shiftside Pro</span>
             <span className="bg-gradient-to-r from-purple-500 to-emerald-500 text-white text-xs px-3 py-1 rounded-full font-black">
-              $14.99
+              Full toolkit
             </span>
           </motion.button>
         </div>

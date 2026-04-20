@@ -719,14 +719,14 @@ function NihssTab() {
             <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-[1.4rem] bg-purple-500/15 border border-purple-500/25">
               <Lock size={28} className="text-purple-400" />
             </div>
-            <h2 className="text-xl font-black text-white tracking-tight">NIHSS Pro</h2>
+            <h2 className="text-xl font-black text-white tracking-tight">Shiftside Pro</h2>
             <p className="mt-2 text-sm text-slate-400 leading-relaxed">
               Full 15-item NIHSS scoring with stroke severity interpretation,
               Hunt &amp; Hess scale, and EHR export.
             </p>
 
             <div className="mt-6 w-full rounded-2xl border border-purple-500/25 bg-purple-500/10 px-4 py-3">
-              <div className="text-[10px] font-black uppercase tracking-[0.28em] text-purple-400 mb-2">Included in Pro</div>
+              <div className="text-[10px] font-black uppercase tracking-[0.28em] text-purple-400 mb-2">Included in Shiftside Pro</div>
               {['NIHSS 0–42 full scoring', 'Stroke severity + tPA eligibility', 'Hunt & Hess scale', 'EHR chart note export'].map(f => (
                 <div key={f} className="flex items-center gap-2 py-1">
                   <Check size={12} className="text-purple-400 shrink-0" />
@@ -744,10 +744,10 @@ function NihssTab() {
                 border: '1px solid rgba(167,139,250,0.4)',
               }}
             >
-              Unlock NIHSS — $19.99
+              Unlock Shiftside Pro
             </motion.button>
 
-            <p className="mt-3 text-[10px] text-slate-600">One-time purchase · Lifetime access</p>
+            <p className="mt-3 text-[10px] text-slate-600">Full toolkit unlock</p>
           </motion.div>
 
           {/* Preview scores below lock (blurred) */}
@@ -857,10 +857,10 @@ export default function NeuroSnap() {
             <div className="text-center">
               <div className="flex items-center justify-center gap-2">
                 <Brain size={17} className="text-purple-400" />
-                <h1 className="text-lg font-black tracking-tight text-white">NeuroSnap</h1>
+                <h1 className="text-lg font-black tracking-tight text-white">Shiftside Neuro</h1>
               </div>
               <p className="mt-0.5 text-[10px] font-bold uppercase tracking-[0.28em] text-slate-500">
-                Visual GCS &amp; NIHSS
+                GCS, NIHSS, and neuro scoring
               </p>
             </div>
             <div className="w-20" />

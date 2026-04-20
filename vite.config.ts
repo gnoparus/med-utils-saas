@@ -16,9 +16,9 @@ export default defineConfig({
         config: true,
       },
       manifest: {
-        name: 'MedUtils - Clinical Tools',
-        short_name: 'MedUtils',
-        description: 'Micro-SaaS Utilities for Clinicians',
+        name: 'Shiftside - Bedside Toolkit',
+        short_name: 'Shiftside',
+        description: 'Fast bedside calculators and chart-ready clinical tools for urgent care teams.',
         theme_color: '#020617',
       },
       workbox: {
