@@ -12,7 +12,6 @@
  */
 
 import "@testing-library/jest-dom";
-import { beforeAll, afterAll } from "vitest";
 
 /**
  * Minimal matchMedia polyfill useful for components that read prefers-reduced-motion
@@ -33,6 +32,13 @@ if (typeof window !== "undefined" && !window.matchMedia) {
         dispatchEvent: () => false,
       };
     },
+  });
+}
+
+if (typeof window !== "undefined") {
+  Object.defineProperty(window, "scrollTo", {
+    writable: true,
+    value: () => {},
   });
 }
 
