@@ -158,7 +158,10 @@ export function RadialDial({ value, min, max, step, glowRgb, unit, onChange }: R
         </motion.div>
 
         {/* Drag hint */}
-        <div className="text-[9px] text-slate-700 font-medium mt-3 tracking-widest uppercase">
+        <div
+          className="text-[9px] font-medium mt-3 tracking-widest uppercase"
+          style={{ color: `rgba(${glowRgb},0.45)` }}
+        >
           drag ↕
         </div>
       </div>
