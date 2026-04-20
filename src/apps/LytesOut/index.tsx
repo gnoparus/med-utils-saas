@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, useRef } from 'react'
 import { motion, AnimatePresence, useSpring, useTransform } from 'framer-motion'
 import {
   AlertTriangle,
@@ -13,6 +13,8 @@ import {
   Zap,
 } from 'lucide-react'
 import { AppShellHeader } from '../../components/app-shell'
+import { trackToolOpened, trackFirstResultCompleted, trackPaywallViewed, trackCheckoutStarted } from '../../lib/analytics'
+import { STRIPE_MONTHLY_URL } from '../../lib/billing'
 import {
   GLOW_COLORS,
   LYTE_PRESETS,
@@ -298,16 +300,46 @@ function AnimatedValue({ value, meta }: { value: number; meta: ElectrolyteMeta }
 export default function LytesOut() {
   const [activeId, setActiveId] = useState<ElectrolyteId>('k')
   const [rawInputs, setRawInputs] = useState<Record<ElectrolyteId, string>>({
+
     k: '3.0', mg: '1.4', po4: '1.8', ca: '7.8', na: '128',
   })
   const [numpadOpen, setNumpadOpen] = useState(false)
   const [copied, setCopied] = useState(false)
+
+  const paywallRef = useRef<HTMLDivElement>(null)
+  const firstResultFired = useRef(false)
 
   const meta = getLyteMeta(activeId)
   const rawValue = rawInputs[activeId]
   const parsedValue = useMemo(() => parseValue(rawValue, meta), [rawValue, meta])
   const analysis: ElectrolyteAnalysis = useMemo(() => analyzeLyte(activeId, parsedValue), [activeId, parsedValue])
   const glow = GLOW_COLORS[analysis.glowState]
+
+  useEffect(() => { trackToolOpened('lytes') }, [])
+
+  useEffect(() => {
+    if (!firstResultFired.current) {
+      firstResultFired.current = true
+      trackFirstResultCompleted('lytes')
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [parsedValue])
+
+  useEffect(() => {
+    const el = paywallRef.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          trackPaywallViewed('lytes', 'weight_based_dosing')
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.5 }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
 
   const handleKey = (key: string) => {
     triggerHaptic(8)
@@ -524,7 +556,7 @@ export default function LytesOut() {
           </button>
 
           {/* ── Pro upsell ── */}
-          <div className="relative overflow-hidden rounded-[1.8rem] border border-yellow-400/18 bg-yellow-500/5 p-5 mb-4">
+          <div ref={paywallRef} className="relative overflow-hidden rounded-[1.8rem] border border-yellow-400/18 bg-yellow-500/5 p-5 mb-4">
             <div
               className="absolute inset-0 pointer-events-none"
               style={{
@@ -542,7 +574,13 @@ export default function LytesOut() {
                 </div>
               ))}
             </div>
-            <div className="relative flex items-start gap-3 rounded-[1.4rem] border border-yellow-300/18 bg-slate-950/75 p-4">
+            <a
+              href={STRIPE_MONTHLY_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => trackCheckoutStarted('monthly')}
+              className="relative flex items-start gap-3 rounded-[1.4rem] border border-yellow-300/18 bg-slate-950/75 p-4 no-underline"
+            >
               <Lock size={16} className="mt-0.5 shrink-0 text-yellow-300" />
               <div>
                 <div className="text-sm font-black text-yellow-100">Unlock Shiftside Pro</div>
@@ -551,9 +589,9 @@ export default function LytesOut() {
                 </p>
               </div>
               <div className="ml-auto shrink-0 rounded-full bg-yellow-300 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-950">
-                Full toolkit
+                Upgrade
               </div>
-            </div>
+            </a>
           </div>
 
           {/* ── Safety disclaimer ── */}

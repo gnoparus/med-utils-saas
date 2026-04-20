@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Copy, Check, Lock, AlertTriangle, Zap, BadgeAlert } from 'lucide-react'
 import { AppShellHeader } from '../../components/app-shell'
@@ -11,6 +11,8 @@ import {
 } from '../../lib/dripdrop-calculator'
 import { IVBagAnimation } from './IVBagAnimation'
 import { RadialDial } from './RadialDial'
+import { trackToolOpened, trackFirstResultCompleted, trackPaywallViewed, trackCheckoutStarted } from '../../lib/analytics'
+import { STRIPE_MONTHLY_URL } from '../../lib/billing'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -251,11 +253,38 @@ function DangerBanner({ drug, dose }: { drug: PresssorDrug; dose: number }) {
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
-export default function DripDrop() {
+export default function DripDrop({ embedded }: { embedded?: boolean } = {}) {
   const [activeDrug, setActiveDrug] = useState<PresssorDrug>(PRESSOR_DRUGS[0])
   const [dose, setDose] = useState(activeDrug.doseRange.min)
   const [weightKg, setWeightKg] = useState(70)
   const [copied, setCopied] = useState(false)
+  const paywallRef = useRef<HTMLDivElement>(null)
+  const firstResultFired = useRef(false)
+
+  useEffect(() => { trackToolOpened('drips') }, [])
+
+  useEffect(() => {
+    if (!firstResultFired.current) {
+      firstResultFired.current = true
+      trackFirstResultCompleted('drips')
+    }
+  }, [dose, weightKg])
+
+  useEffect(() => {
+    const el = paywallRef.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          trackPaywallViewed('drips', 'custom_concentrations')
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.5 }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
 
   const handleDrugChange = (d: PresssorDrug) => {
     setActiveDrug(d)
@@ -302,7 +331,7 @@ export default function DripDrop() {
       </AnimatePresence>
 
       <div className="relative flex h-full flex-col">
-        <AppShellHeader toolId="drips" />
+        {!embedded && <AppShellHeader toolId="drips" />}
 
         {/* ── Drug Selector strip ── */}
         <div className="shrink-0 mb-3">
@@ -487,7 +516,7 @@ export default function DripDrop() {
           </motion.button>
 
           {/* ── Premium Upsell ── */}
-          <div className="relative overflow-hidden rounded-[1.8rem] border border-blue-400/18 bg-blue-500/5 p-5 mt-4">
+          <div ref={paywallRef} className="relative overflow-hidden rounded-[1.8rem] border border-blue-400/18 bg-blue-500/5 p-5 mt-4">
             <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(circle at top right, rgba(59,130,246,0.14), transparent 40%)' }} />
             <div className="relative flex items-center gap-2 text-blue-300 mb-3">
               <Lock size={14} />
@@ -500,7 +529,13 @@ export default function DripDrop() {
                 </div>
               ))}
             </div>
-            <div className="relative flex items-start gap-3 rounded-[1.4rem] border border-blue-300/18 bg-slate-950/75 p-4">
+            <a
+              href={STRIPE_MONTHLY_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => trackCheckoutStarted('monthly')}
+              className="relative flex items-start gap-3 rounded-[1.4rem] border border-blue-300/18 bg-slate-950/75 p-4 no-underline"
+            >
               <Lock size={16} className="mt-0.5 shrink-0 text-blue-300" />
               <div>
                 <div className="text-sm font-black text-blue-100">Unlock Shiftside Pro</div>
@@ -509,9 +544,9 @@ export default function DripDrop() {
                 </p>
               </div>
               <div className="ml-auto shrink-0 rounded-full bg-blue-300 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-950">
-                Full toolkit
+                Upgrade
               </div>
-            </div>
+            </a>
           </div>
 
           {/* ── Safety Disclaimer ── */}

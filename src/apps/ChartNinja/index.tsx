@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Check,
@@ -10,6 +10,8 @@ import {
   Lock,
 } from 'lucide-react'
 import { AppShellHeader } from '../../components/app-shell'
+import { trackToolOpened, trackFirstResultCompleted, trackPaywallViewed, trackCheckoutStarted } from '../../lib/analytics'
+import { STRIPE_MONTHLY_URL } from '../../lib/billing'
 import {
   NOTE_TEMPLATES,
   countFilledFields,
@@ -478,6 +480,33 @@ function SnippetPanel({
 export default function ChartNinja() {
   const [selectedTemplate, setSelectedTemplate] = useState<NoteTemplate>(NOTE_TEMPLATES[0])
   const [fieldValues, setFieldValues] = useState<Record<string, Record<string, string | string[]>>>({})
+  const paywallRef = useRef<HTMLDivElement>(null)
+  const firstResultFired = useRef(false)
+
+  useEffect(() => { trackToolOpened('notes') }, [])
+
+  useEffect(() => {
+    if (!firstResultFired.current && Object.keys(fieldValues).length > 0) {
+      firstResultFired.current = true
+      trackFirstResultCompleted('notes')
+    }
+  }, [fieldValues])
+
+  useEffect(() => {
+    const el = paywallRef.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          trackPaywallViewed('notes', 'custom_templates')
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.5 }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
 
   const currentValues = fieldValues[selectedTemplate.id] ?? {}
 
@@ -613,6 +642,7 @@ export default function ChartNinja() {
 
         {/* Pro teaser */}
         <div
+          ref={paywallRef}
           className="rounded-[1.8rem] border px-5 py-4 flex items-center gap-3"
           style={{ background: 'rgba(167,139,250,0.07)', borderColor: 'rgba(167,139,250,0.22)' }}
         >
@@ -628,10 +658,12 @@ export default function ChartNinja() {
               Custom templates, expanded bedside documentation modes, voice dictation, and export tools.
             </div>
           </div>
-          <motion.button
-            whileTap={{ scale: 0.95 }}
-            onClick={() => triggerHaptic([10, 20, 40])}
-            className="shrink-0 rounded-2xl px-3.5 py-2 text-[11px] font-black"
+          <a
+            href={STRIPE_MONTHLY_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => { triggerHaptic([10, 20, 40]); trackCheckoutStarted('monthly') }}
+            className="shrink-0 rounded-2xl px-3.5 py-2 text-[11px] font-black no-underline"
             style={{
               background: 'rgba(167,139,250,0.2)',
               border: '1px solid rgba(167,139,250,0.3)',
@@ -639,7 +671,7 @@ export default function ChartNinja() {
             }}
           >
             Unlock Pro
-          </motion.button>
+          </a>
         </div>
       </div>
     </div>

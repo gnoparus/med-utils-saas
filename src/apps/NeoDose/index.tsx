@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import {
   motion,
   AnimatePresence,
@@ -15,6 +15,7 @@ import {
   Lock,
 } from "lucide-react";
 import { AppShellHeader } from "../../components/app-shell";
+import { trackToolOpened, trackFirstResultCompleted } from "../../lib/analytics";
 
 // ─── Broselow Band Data ───────────────────────────────────────────────────────
 const BROSELOW_BANDS = [
@@ -363,16 +364,23 @@ function NumpadWeight({
 }
 
 // ─── Main NeoDose Component ───────────────────────────────────────────────────
-export default function NeoDose() {
+export default function NeoDose({ embedded }: { embedded?: boolean } = {}) {
   const [weight, setWeight] = useState(10);
   const [showNumpad, setShowNumpad] = useState(false);
   const band = getBand(weight);
+  const firstResultFired = useRef(false);
+
+  useEffect(() => { trackToolOpened('dose'); }, []);
 
   // Slider percentage
   const sliderPct = ((weight - 1) / (50 - 1)) * 100;
 
   const handleSlider = (e: React.ChangeEvent<HTMLInputElement>) => {
     const v = parseFloat(e.target.value);
+    if (!firstResultFired.current) {
+      firstResultFired.current = true;
+      trackFirstResultCompleted('dose');
+    }
     setWeight(v);
     if (typeof navigator !== "undefined" && navigator.vibrate)
       navigator.vibrate(6);
@@ -479,7 +487,7 @@ export default function NeoDose() {
       className="h-screen w-screen flex flex-col overflow-hidden"
       style={{ background: "hsl(222,40%,5%)" }}
     >
-      <AppShellHeader toolId="dose" />
+      {!embedded && <AppShellHeader toolId="dose" />}
 
       {/* ── Broselow color hero header ─────────────────────────── */}
       <motion.div

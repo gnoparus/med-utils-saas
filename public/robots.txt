@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://utils.clinicianid.com/sitemap.xml

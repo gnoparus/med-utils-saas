@@ -34,4 +34,8 @@ export default defineConfig({
       },
     })
   ],
+  ssr: {
+    // Bundle react-router into the SSR output so Node.js can import it correctly
+    noExternal: ['react-router', 'react-router-dom'],
+  },
 })

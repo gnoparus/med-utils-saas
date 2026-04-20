@@ -9,6 +9,7 @@ import {
   ChevronUp,
 } from 'lucide-react'
 import { AppShellHeader } from '../../components/app-shell'
+import { trackToolOpened, trackFirstResultCompleted } from '../../lib/analytics'
 import {
   GCS_CATEGORIES,
   NIHSS_CATEGORIES,
@@ -586,6 +587,9 @@ function CopyButton({ text, label = 'Copy for Chart' }: { text: string; label?: 
 
 // ─── GCS Tab ──────────────────────────────────────────────────────────────────
 
+// Module-level flag so first_result fires once per page load, regardless of tab
+let firstNeuroResultFired = false
+
 function GcsTab() {
   const [scores, setScores] = useState({ eyes: 4, verbal: 5, motor: 6 })
 
@@ -596,6 +600,10 @@ function GcsTab() {
   const glow = GLOW[analysis.glowState]
 
   const handleSelect = useCallback((cat: 'eyes' | 'verbal' | 'motor', score: number) => {
+    if (!firstNeuroResultFired) {
+      firstNeuroResultFired = true
+      trackFirstResultCompleted('neuro')
+    }
     setScores(prev => ({ ...prev, [cat]: score }))
   }, [])
 
@@ -808,8 +816,10 @@ function NihssTab() {
 
 type Mode = 'gcs' | 'nihss'
 
-export default function NeuroSnap() {
+export default function NeuroSnap({ embedded }: { embedded?: boolean } = {}) {
   const [mode, setMode] = useState<Mode>('gcs')
+
+  useEffect(() => { trackToolOpened('neuro') }, [])
 
   const handleModeChange = (m: Mode) => {
     setMode(m)
@@ -844,7 +854,7 @@ export default function NeuroSnap() {
       </AnimatePresence>
 
       <div className="relative flex h-full flex-col">
-        <AppShellHeader toolId="neuro" />
+        {!embedded && <AppShellHeader toolId="neuro" />}
 
         {/* ── Mode tab strip ── */}
         <div className="shrink-0 px-4 mb-4">

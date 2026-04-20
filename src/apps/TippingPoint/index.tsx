@@ -1,4 +1,4 @@
-import { useDeferredValue, useMemo, useState, useTransition } from 'react'
+import { useDeferredValue, useMemo, useState, useTransition, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Activity,
@@ -13,6 +13,7 @@ import {
   Sparkles,
 } from 'lucide-react'
 import { AppShellHeader } from '../../components/app-shell'
+import { trackToolOpened, trackFirstResultCompleted } from '../../lib/analytics'
 import { Numpad } from '../../components/ui/Numpad'
 import { TIPPING_POINT_PRESETS, analyzeAbg, type AbgAnalysis } from '../../lib/tippingpoint-calculator'
 
@@ -508,7 +509,7 @@ function DetailPanel({
   )
 }
 
-export default function TippingPoint() {
+export default function TippingPoint({ embedded }: { embedded?: boolean } = {}) {
   const [fieldValues, setFieldValues] = useState<Record<FieldKey, string>>({
     pH: FIELD_META.pH.defaultValue,
     pco2: FIELD_META.pco2.defaultValue,
@@ -519,6 +520,17 @@ export default function TippingPoint() {
   const [sheetExpanded, setSheetExpanded] = useState(false)
   const [copied, setCopied] = useState(false)
   const [isPending, startTransition] = useTransition()
+  const firstResultFired = useRef(false)
+
+  useEffect(() => { trackToolOpened('abg') }, [])
+
+  useEffect(() => {
+    if (!firstResultFired.current) {
+      firstResultFired.current = true
+      trackFirstResultCompleted('abg')
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fieldValues])
 
   const parsedInput = useMemo(() => ({
     pH: parseFieldValue('pH', fieldValues.pH),
@@ -597,7 +609,7 @@ export default function TippingPoint() {
       />
 
       <div className="relative flex h-full flex-col">
-        <AppShellHeader toolId="abg" />
+        {!embedded && <AppShellHeader toolId="abg" />}
 
         <div className="flex-1 overflow-y-auto px-4 pb-8">
           <div className="flex gap-2 overflow-x-auto pb-2">

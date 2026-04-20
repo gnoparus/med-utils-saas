@@ -14,10 +14,21 @@ import {
   WifiOff,
 } from 'lucide-react'
 import { heroPreviewTools, shiftsideTools } from '../../content/shiftsideTools'
+import {
+  ANNUAL_PRICE,
+  ANNUAL_SAVINGS_PCT,
+  MONTHLY_PRICE,
+  STRIPE_ANNUAL_URL,
+  STRIPE_MONTHLY_URL,
+} from '../../lib/billing'
+import { trackCheckoutStarted, trackLandingCtaClicked } from '../../lib/analytics'
 
-const PAGE_TITLE = 'Shiftside | Fast Bedside Calculators and Chart-Ready Clinical Tools'
+const PAGE_TITLE = 'Shiftside | Fastest Bedside Drip Workflow on Mobile'
 const PAGE_DESCRIPTION =
-  'Fast bedside calculators for dosing, drips, ABGs, neuro scoring, and chart-ready text. Mobile-first, offline-capable, and built for urgent clinical workflows.'
+  'Calculate IV drip rates in seconds. Norepi, epi, dopamine and more — mcg/kg/min to mL/hr, concentration-aware, offline. Free. No login.'
+
+// Index of DripDrop in heroPreviewTools (tools with .preview defined: Dose=0, Drips=1)
+const DRIPS_HERO_INDEX = 1
 
 const outcomeCards = [
   {
@@ -168,13 +179,16 @@ function SectionHeading({
 function PrimaryButton({
   to,
   children,
+  onClick,
 }: {
   to: string
   children: React.ReactNode
+  onClick?: () => void
 }) {
   return (
     <Link
       to={to}
+      onClick={onClick}
       className="inline-flex items-center justify-center gap-2 rounded-full border border-cyan-300/35 bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 shadow-[0_18px_60px_rgba(103,232,249,0.22)] transition-transform duration-200 hover:-translate-y-0.5"
     >
       {children}
@@ -201,7 +215,7 @@ function GhostButton({
 }
 
 function HeroPreview() {
-  const [activeIndex, setActiveIndex] = useState(0)
+  const [activeIndex, setActiveIndex] = useState(DRIPS_HERO_INDEX)
   const activeCard = heroPreviewTools[activeIndex]
   const ActiveIcon = activeCard.icon
 
@@ -502,16 +516,20 @@ export default function LandingPage() {
                   FAST, OFFLINE, MOBILE-FIRST
                 </div>
                 <h1 className="font-display mt-6 max-w-xl text-5xl leading-[0.95] text-white sm:text-6xl lg:text-[4.6rem]">
-                  The bedside toolkit clinicians open before the EHR.
+                  The fastest bedside drip workflow on mobile.
                 </h1>
                 <p className="mt-6 max-w-2xl text-base leading-8 text-slate-300 sm:text-lg">
-                  Dose faster, titrate drips confidently, score neuro exams, interpret ABGs, and copy chart-ready text
-                  {' '}all on your phone, with no login and no patient data stored.
+                  Convert mcg/kg/min to mL/hr in seconds — concentration-aware, offline, no login. Norepi, epi, dopamine and more. Then stay for ABGs, GCS, lytes, and chart-ready text.
                 </p>
 
                 <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-                  <PrimaryButton to="/neodose">Open Shiftside</PrimaryButton>
-                  <GhostButton href="#tools">See how it works</GhostButton>
+                  <PrimaryButton
+                    to="/dripdrop"
+                    onClick={() => trackLandingCtaClicked('hero_try_drips_free')}
+                  >
+                    Try Drips Free
+                  </PrimaryButton>
+                  <GhostButton href="#tools">See all tools</GhostButton>
                 </div>
 
                 <div className="mt-5 flex flex-wrap gap-2.5">
@@ -761,65 +779,94 @@ export default function LandingPage() {
 
         <section id="pricing" className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
           <SectionHeading
-            title="Free essentials. Pro for the full bedside toolkit."
+            title="Free essentials. Pro for every shift."
             align="center"
           />
 
           <div className="mt-10 grid gap-4 lg:grid-cols-2">
+            {/* ── Free card ── */}
             <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-[11px] font-semibold uppercase tracking-[0.32em] text-slate-400">Free</div>
-                  <div className="mt-3 text-3xl font-semibold text-white">Start fast</div>
+                  <div className="text-[11px] font-semibold uppercase tracking-[0.32em] text-slate-400">Free Essentials</div>
+                  <div className="mt-2 text-4xl font-semibold text-white">$0</div>
+                  <div className="mt-1 text-xs text-slate-500">Free forever. No login.</div>
                 </div>
                 <div className="rounded-full border border-emerald-300/18 bg-emerald-300/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-emerald-100">
                   Open now
                 </div>
               </div>
               <div className="mt-6 grid gap-3">
-                {['Core tools', 'Basic dosing', 'Basic drip math', 'Basic scoring', 'Installable PWA'].map((item) => (
+                {[
+                  'Drips: standard concentrations',
+                  'Neuro: GCS only',
+                  'ABG: basic interpretation',
+                  'Installable PWA',
+                  'Offline. No login. No patient data.',
+                ].map((item) => (
                   <div key={item} className="rounded-[1.2rem] border border-white/8 bg-slate-950/60 px-4 py-3 text-sm text-slate-200">
                     {item}
                   </div>
                 ))}
               </div>
               <div className="mt-6">
-                <PrimaryButton to="/neodose">Open Shiftside</PrimaryButton>
+                <PrimaryButton
+                  to="/dripdrop"
+                  onClick={() => trackLandingCtaClicked('pricing_open_drips_free')}
+                >
+                  Open Drips Free
+                </PrimaryButton>
               </div>
             </div>
 
+            {/* ── Pro card ── */}
             <div className="relative overflow-hidden rounded-[2rem] border border-cyan-300/20 bg-[linear-gradient(180deg,rgba(103,232,249,0.09),rgba(15,23,42,0.26))] p-6 shadow-[0_30px_90px_rgba(103,232,249,0.12)]">
               <div className="absolute right-0 top-0 h-40 w-40 bg-[radial-gradient(circle,rgba(103,232,249,0.14),transparent_58%)]" />
-              <div className="relative flex items-center justify-between">
+              <div className="relative flex items-start justify-between gap-4">
                 <div>
                   <div className="text-[11px] font-semibold uppercase tracking-[0.32em] text-cyan-100/70">Shiftside Pro</div>
-                  <div className="mt-3 text-3xl font-semibold text-white">Full bedside flow</div>
+                  <div className="mt-2 text-4xl font-semibold text-white">{MONTHLY_PRICE}<span className="text-xl text-slate-400">/mo</span></div>
+                  <div className="mt-1 text-xs text-slate-400">{ANNUAL_PRICE}/yr <span className="text-emerald-300">— save {ANNUAL_SAVINGS_PCT}</span></div>
                 </div>
-                <div className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-cyan-100">
-                  One upgrade
+                <div className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-cyan-100 shrink-0">
+                  Full toolkit
                 </div>
               </div>
               <div className="relative mt-6 grid gap-3">
                 {[
-                  'Full toolkit access',
-                  'Advanced calculators and modes',
-                  'Full scoring library',
-                  'Full chart-ready copy tools',
-                  'Faster shift workflow in one place',
+                  'Full Drips — custom concentrations',
+                  'Full NeoDose — all weight-based modes',
+                  'Full ABG — advanced acid-base modes',
+                  'LytesOut — electrolyte repletion',
+                  'NIHSS and advanced neuro scales',
+                  'Notes and chart-ready copy tools',
+                  'Every future bedside tool',
                 ].map((item) => (
                   <div key={item} className="rounded-[1.2rem] border border-white/8 bg-slate-950/60 px-4 py-3 text-sm text-slate-100">
                     {item}
                   </div>
                 ))}
               </div>
-              <div className="relative mt-6">
-                <Link
-                  to="/neodose"
+              <div className="relative mt-6 flex flex-col gap-3 sm:flex-row">
+                <a
+                  href={STRIPE_MONTHLY_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => trackCheckoutStarted('monthly')}
                   className="inline-flex items-center justify-center gap-2 rounded-full border border-cyan-300/35 bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950"
                 >
                   <Lock className="h-4 w-4" />
-                  Unlock Pro
-                </Link>
+                  Monthly — {MONTHLY_PRICE}
+                </a>
+                <a
+                  href={STRIPE_ANNUAL_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => trackCheckoutStarted('annual')}
+                  className="inline-flex items-center justify-center gap-2 rounded-full border border-cyan-300/22 bg-cyan-300/10 px-5 py-3 text-sm font-semibold text-cyan-100"
+                >
+                  Annual — {ANNUAL_PRICE} <span className="text-emerald-300 text-xs">save {ANNUAL_SAVINGS_PCT}</span>
+                </a>
               </div>
             </div>
           </div>
@@ -888,10 +935,11 @@ export default function LandingPage() {
 
       <div className="fixed inset-x-4 bottom-4 z-50 md:hidden">
         <Link
-          to="/neodose"
+          to="/dripdrop"
+          onClick={() => trackLandingCtaClicked('mobile_sticky_try_drips')}
           className="flex items-center justify-center gap-2 rounded-full border border-cyan-300/30 bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 shadow-[0_24px_70px_rgba(103,232,249,0.22)]"
         >
-          Open Shiftside
+          Try Drips Free
           <ArrowRight className="h-4 w-4" />
         </Link>
       </div>

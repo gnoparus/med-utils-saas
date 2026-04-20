@@ -71,6 +71,15 @@ declare global {
   }
 }
 
+if (typeof (globalThis as any).IntersectionObserver === "undefined") {
+  class FakeIntersectionObserver {
+    observe(_: Element) { return; }
+    unobserve(_: Element) { return; }
+    disconnect() { return; }
+  }
+  (globalThis as any).IntersectionObserver = FakeIntersectionObserver;
+}
+
 if (typeof (globalThis as any).ResizeObserver === "undefined") {
   class FakeResizeObserver {
     observe(_: Element) {
