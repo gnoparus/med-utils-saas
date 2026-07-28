@@ -530,7 +530,6 @@ export default function TippingPoint({ embedded }: { embedded?: boolean } = {}) 
       firstResultFired.current = true
       trackFirstResultCompleted('abg')
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fieldValues])
 
   const parsedInput = useMemo(() => ({

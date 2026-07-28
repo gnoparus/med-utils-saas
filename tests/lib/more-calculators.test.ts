@@ -7,7 +7,7 @@ import {
   TIPPING_POINT_PRESETS,
 } from "../../src/lib/tippingpoint-calculator";
 import { NOTE_TEMPLATES } from "../../src/lib/chartninja-calculator";
-import { getBand, WEIGHT_PRESETS } from "../../src/apps/NeoDose/index";
+import { getBand, WEIGHT_PRESETS } from "../../src/apps/NeoDose/broselow";
 
 describe("NeuroSnap calculators", () => {
   it("analyzeGcs returns normal for full-score inputs", () => {
@@ -25,7 +25,6 @@ describe("NeuroSnap calculators", () => {
   });
 
   it("analyzeNihss handles zero scores and non-zero totals", () => {
-    const zeros: Record<string, number> = {};
     // create zeros for each NIHSS category to be safe
     const nihssAllZero: Record<string, number> = {};
     // populate with keys known to exist based on exported categories - we only need to test behavior
