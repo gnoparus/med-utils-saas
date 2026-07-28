@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { Home } from 'lucide-react'
 import {
@@ -13,10 +13,43 @@ interface AppShellHeaderProps {
   rightSlot?: ReactNode
 }
 
+const FADE_EDGE = '2rem'
+const NAV_FADE: Record<string, string | undefined> = {
+  both: `linear-gradient(to right, transparent, black ${FADE_EDGE}, black calc(100% - ${FADE_EDGE}), transparent)`,
+  left: `linear-gradient(to right, transparent, black ${FADE_EDGE})`,
+  right: `linear-gradient(to right, black calc(100% - ${FADE_EDGE}), transparent)`,
+  none: undefined,
+}
+
 export function AppShellHeader({ toolId, rightSlot }: AppShellHeaderProps) {
   const location = useLocation()
   const activeTool = getShiftsideTool(toolId)
   const ActiveIcon = activeTool.icon
+  const navRef = useRef<HTMLElement>(null)
+  const [navFade, setNavFade] = useState<'both' | 'left' | 'right' | 'none'>('none')
+
+  useEffect(() => {
+    const el = navRef.current
+    if (!el) return
+
+    const updateFade = () => {
+      const canScrollLeft = el.scrollLeft > 1
+      const canScrollRight = el.scrollLeft + el.clientWidth < el.scrollWidth - 1
+
+      if (canScrollLeft && canScrollRight) setNavFade('both')
+      else if (canScrollRight) setNavFade('right')
+      else if (canScrollLeft) setNavFade('left')
+      else setNavFade('none')
+    }
+
+    updateFade()
+    el.addEventListener('scroll', updateFade, { passive: true })
+    window.addEventListener('resize', updateFade)
+    return () => {
+      el.removeEventListener('scroll', updateFade)
+      window.removeEventListener('resize', updateFade)
+    }
+  }, [])
 
   return (
     <div className="sticky top-0 z-30 shrink-0 border-b border-white/8 bg-slate-950/84 px-4 pb-3 pt-[calc(env(safe-area-inset-top)+0.85rem)] backdrop-blur-xl">
@@ -58,8 +91,10 @@ export function AppShellHeader({ toolId, rightSlot }: AppShellHeaderProps) {
       </div>
 
       <nav
+        ref={navRef}
         aria-label="Switch Shiftside tools"
-        className="-mx-4 mt-4 overflow-x-auto px-4 pb-1 scrollbar-none [mask-image:linear-gradient(to_right,black_calc(100%-2rem),transparent)] [-webkit-mask-image:linear-gradient(to_right,black_calc(100%-2rem),transparent)]"
+        className="-mx-4 mt-4 overflow-x-auto px-4 pb-1 scrollbar-none"
+        style={{ maskImage: NAV_FADE[navFade], WebkitMaskImage: NAV_FADE[navFade] }}
       >
         <div className="flex min-w-max gap-2.5">
           {shiftsideTools.map((tool) => {
