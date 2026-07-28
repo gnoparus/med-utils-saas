@@ -26,3 +26,7 @@ dist-ssr
 .vercel
 .env*.local
 .ssr
+
+# Impeccable live-mode runtime state
+.impeccable/live/server.json
+.impeccable/live/sessions/
