@@ -46,11 +46,18 @@ if (typeof window !== "undefined") {
  * Minimal navigator.vibrate stub so components that call navigator.vibrate do not throw in JSDOM.
  * Tests can override this with vi.spyOn(navigator, 'vibrate') if they need to assert calls.
  */
-if (typeof (globalThis as any).navigator === "undefined") {
-  (globalThis as any).navigator = {};
+type TestGlobal = {
+  navigator: Navigator & { vibrate?: (pattern?: number | number[]) => boolean };
+  IntersectionObserver: unknown;
+  ResizeObserver: unknown;
+};
+const testGlobal = globalThis as unknown as TestGlobal;
+
+if (typeof testGlobal.navigator === "undefined") {
+  testGlobal.navigator = {} as Navigator & { vibrate?: (pattern?: number | number[]) => boolean };
 }
-if (typeof (globalThis as any).navigator.vibrate !== "function") {
-  (globalThis as any).navigator.vibrate = (pattern?: number | number[]) => {
+if (typeof testGlobal.navigator.vibrate !== "function") {
+  testGlobal.navigator.vibrate = () => {
     // Return true to indicate the vibration was accepted (matches browsers' behavior)
     return true;
   };
@@ -61,38 +68,28 @@ if (typeof (globalThis as any).navigator.vibrate !== "function") {
  * or libraries that rely on ResizeObserver. Tests can override this mock via vi.spyOn
  * or provide a more advanced implementation where needed.
  */
-declare global {
-  // allow assigning on globalThis in TypeScript
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace NodeJS {
-    interface Global {
-      ResizeObserver?: any;
-    }
-  }
-}
-
-if (typeof (globalThis as any).IntersectionObserver === "undefined") {
+if (typeof testGlobal.IntersectionObserver === "undefined") {
   class FakeIntersectionObserver {
-    observe(_: Element) { return; }
-    unobserve(_: Element) { return; }
+    observe() { return; }
+    unobserve() { return; }
     disconnect() { return; }
   }
-  (globalThis as any).IntersectionObserver = FakeIntersectionObserver;
+  testGlobal.IntersectionObserver = FakeIntersectionObserver;
 }
 
-if (typeof (globalThis as any).ResizeObserver === "undefined") {
+if (typeof testGlobal.ResizeObserver === "undefined") {
   class FakeResizeObserver {
-    observe(_: Element) {
+    observe() {
       return;
     }
-    unobserve(_: Element) {
+    unobserve() {
       return;
     }
     disconnect() {
       return;
     }
   }
-  (globalThis as any).ResizeObserver = FakeResizeObserver;
+  testGlobal.ResizeObserver = FakeResizeObserver;
 }
 
 /**

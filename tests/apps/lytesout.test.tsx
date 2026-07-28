@@ -9,11 +9,11 @@ describe("LytesOut UI", () => {
     // stub clipboard writeText and ensure vibrate exists
     const clipboard = { writeText: vi.fn() };
     // keep existing navigator if any, but ensure clipboard and vibrate are present
-    // @ts-ignore
+    // @ts-expect-error -- jsdom's Navigator type forbids reassignment
     if (typeof globalThis.navigator === "undefined") globalThis.navigator = {};
-    // @ts-ignore
+    // @ts-expect-error -- clipboard isn't part of jsdom's Navigator type
     globalThis.navigator.clipboard = clipboard;
-    // @ts-ignore
+    // @ts-expect-error -- vibrate isn't part of jsdom's Navigator type
     globalThis.navigator.vibrate =
       typeof globalThis.navigator.vibrate === "function"
         ? globalThis.navigator.vibrate
@@ -21,14 +21,15 @@ describe("LytesOut UI", () => {
   });
 
   afterEach(() => {
-    // @ts-ignore
+    // @ts-expect-error -- clipboard isn't part of jsdom's Navigator type
     if (
       globalThis.navigator &&
       globalThis.navigator.clipboard &&
       typeof globalThis.navigator.clipboard.writeText === "function"
     ) {
       // restore mock calls
-      (globalThis.navigator.clipboard.writeText as any).mockClear?.();
+      const writeText = globalThis.navigator.clipboard.writeText as unknown as ReturnType<typeof vi.fn>;
+      writeText.mockClear?.();
     }
   });
 
@@ -79,11 +80,10 @@ describe("LytesOut UI", () => {
 
     // Ensure clipboard writeText was invoked with some string
     await waitFor(() => {
-      // @ts-ignore
-      expect(navigator.clipboard.writeText).toHaveBeenCalled();
+      const writeText = navigator.clipboard.writeText as unknown as ReturnType<typeof vi.fn>;
+      expect(writeText).toHaveBeenCalled();
       // Optionally assert it was called with a non-empty string
-      // @ts-ignore
-      const calledWith = navigator.clipboard.writeText.mock.calls[0][0];
+      const calledWith = writeText.mock.calls[0][0];
       expect(typeof calledWith).toBe("string");
       expect(calledWith.length).toBeGreaterThan(0);
     });
