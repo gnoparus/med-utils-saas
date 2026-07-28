@@ -71,7 +71,7 @@ export function AppShellHeader({ toolId, rightSlot }: AppShellHeaderProps) {
         Skip to content
       </a>
       <div className="sticky top-0 z-30 shrink-0 border-b border-white/8 bg-slate-950/84 px-4 pb-3 pt-[calc(env(safe-area-inset-top)+0.85rem)] backdrop-blur-xl">
-      <div className="grid grid-cols-[auto_1fr_auto] items-center gap-3">
+      <div className="grid grid-cols-[auto_1fr_auto] items-center gap-3 sm:grid-cols-[6rem_1fr_6rem]">
         <div className="flex items-center">
           <Link
             to="/"

@@ -510,6 +510,7 @@ function DetailPanel({
 }
 
 export default function TippingPoint({ embedded }: { embedded?: boolean } = {}) {
+  const ContentTag = embedded ? 'div' : 'main'
   const [fieldValues, setFieldValues] = useState<Record<FieldKey, string>>({
     pH: FIELD_META.pH.defaultValue,
     pco2: FIELD_META.pco2.defaultValue,
@@ -611,7 +612,7 @@ export default function TippingPoint({ embedded }: { embedded?: boolean } = {}) 
       <div className="relative flex h-full flex-col">
         {!embedded && <AppShellHeader toolId="abg" />}
 
-        <div id="main-content" tabIndex={-1} className="flex-1 overflow-y-auto px-4 pb-8 outline-none">
+        <ContentTag id={embedded ? undefined : 'main-content'} tabIndex={-1} className="flex-1 overflow-y-auto px-4 pb-8 outline-none">
           <div className="flex gap-2 overflow-x-auto pb-2">
             {TIPPING_POINT_PRESETS.map((preset) => (
               <motion.button
@@ -710,7 +711,7 @@ export default function TippingPoint({ embedded }: { embedded?: boolean } = {}) 
               </p>
             </div>
           </div>
-        </div>
+        </ContentTag>
 
         <div className="shrink-0 border-t border-white/6 bg-slate-950/90 px-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] pt-3 backdrop-blur-xl">
           <button

@@ -365,6 +365,7 @@ function NumpadWeight({
 
 // ─── Main NeoDose Component ───────────────────────────────────────────────────
 export default function NeoDose({ embedded }: { embedded?: boolean } = {}) {
+  const ContentTag = embedded ? 'div' : 'main'
   const [weight, setWeight] = useState(10);
   const [showNumpad, setShowNumpad] = useState(false);
   const band = getBand(weight);
@@ -489,7 +490,7 @@ export default function NeoDose({ embedded }: { embedded?: boolean } = {}) {
     >
       {!embedded && <AppShellHeader toolId="dose" />}
 
-      <div id="main-content" tabIndex={-1} className="flex min-h-0 flex-1 flex-col outline-none">
+      <ContentTag id={embedded ? undefined : 'main-content'} tabIndex={-1} className="flex min-h-0 flex-1 flex-col outline-none">
       {/* ── Broselow color hero header ─────────────────────────── */}
       <motion.div
         className="shrink-0 px-5 pb-5 relative overflow-hidden"
@@ -726,7 +727,7 @@ export default function NeoDose({ embedded }: { embedded?: boolean } = {}) {
           </motion.button>
         </div>
       </div>
-      </div>
+      </ContentTag>
     </div>
   );
 }
