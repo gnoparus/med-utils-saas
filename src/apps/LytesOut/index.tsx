@@ -322,7 +322,6 @@ export default function LytesOut() {
       firstResultFired.current = true
       trackFirstResultCompleted('lytes')
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parsedValue])
 
   useEffect(() => {
