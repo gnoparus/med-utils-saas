@@ -438,7 +438,7 @@ export default function LytesOut() {
         </div>
 
         {/* ── Scrollable content ── */}
-        <div className="flex-1 overflow-y-auto px-4 pb-6">
+        <div id="main-content" tabIndex={-1} className="flex-1 overflow-y-auto px-4 pb-6 outline-none">
           {/* Quick presets */}
           <div className="flex gap-2 overflow-x-auto pb-2 mb-4 scrollbar-none">
             {LYTE_PRESETS[activeId].map(p => (

@@ -661,7 +661,7 @@ export default function NeoDose({ embedded }: { embedded?: boolean } = {}) {
       </AnimatePresence>
 
       {/* ── Scrollable Med Cards ───────────────────────────────── */}
-      <div className="flex-1 overflow-y-auto px-4 py-5 space-y-3 pb-24">
+      <div id="main-content" tabIndex={-1} className="flex-1 overflow-y-auto px-4 py-5 space-y-3 pb-24 outline-none">
         {/* Section: Free */}
         <div className="flex items-center gap-3 mb-1">
           <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">

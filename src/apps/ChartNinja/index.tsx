@@ -588,7 +588,7 @@ export default function ChartNinja() {
       </AnimatePresence>
 
       {/* ── Scrollable content ─────────────────────────────────────────── */}
-      <div className="flex-1 overflow-y-auto overscroll-none scrollbar-none px-6 pb-8 space-y-3">
+      <div id="main-content" tabIndex={-1} className="flex-1 overflow-y-auto overscroll-none scrollbar-none px-6 pb-8 space-y-3 outline-none">
         {/* Fields */}
         <AnimatePresence mode="wait">
           <motion.div

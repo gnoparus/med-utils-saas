@@ -611,7 +611,7 @@ export default function TippingPoint({ embedded }: { embedded?: boolean } = {}) 
       <div className="relative flex h-full flex-col">
         {!embedded && <AppShellHeader toolId="abg" />}
 
-        <div className="flex-1 overflow-y-auto px-4 pb-8">
+        <div id="main-content" tabIndex={-1} className="flex-1 overflow-y-auto px-4 pb-8 outline-none">
           <div className="flex gap-2 overflow-x-auto pb-2">
             {TIPPING_POINT_PRESETS.map((preset) => (
               <motion.button

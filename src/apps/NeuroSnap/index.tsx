@@ -897,7 +897,7 @@ export default function NeuroSnap({ embedded }: { embedded?: boolean } = {}) {
         </div>
 
         {/* ── Scrollable content ── */}
-        <div className="flex-1 overflow-y-auto px-4 pb-10" style={{ WebkitOverflowScrolling: 'touch' }}>
+        <div id="main-content" tabIndex={-1} className="flex-1 overflow-y-auto px-4 pb-10 outline-none" style={{ WebkitOverflowScrolling: 'touch' }}>
           <AnimatePresence mode="wait">
             {mode === 'gcs' ? (
               <motion.div

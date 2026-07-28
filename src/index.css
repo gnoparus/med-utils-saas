@@ -77,4 +77,12 @@
     border: 1px solid var(--surface-border);
     backdrop-filter: blur(18px);
   }
+
+  .scrollbar-none {
+    scrollbar-width: none;
+  }
+
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
 }

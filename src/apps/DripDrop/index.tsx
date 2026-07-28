@@ -384,7 +384,7 @@ export default function DripDrop({ embedded }: { embedded?: boolean } = {}) {
         <DangerBanner drug={activeDrug} dose={dose} />
 
         {/* ── Scrollable body ── */}
-        <div className="flex-1 overflow-y-auto pb-8 px-4">
+        <div id="main-content" tabIndex={-1} className="flex-1 overflow-y-auto pb-8 px-4 outline-none">
 
           {/* ── Dial + IV Bag ── */}
           <div className="flex items-start justify-center gap-4 mt-4">
