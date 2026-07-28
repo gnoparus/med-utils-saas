@@ -7,6 +7,7 @@ colors:
   surface-border: "#FFFFFF17"
   slate-900: "#0F172A"
   slate-950: "#020617"
+  chrome-muted: "#94A3B8"
   neon-blue: "#00F0FF"
   neon-pink: "#FF0055"
   dose-cyan: "#67E8F9"
@@ -114,7 +115,8 @@ Dark, desaturated navy carries the frame; each tool injects one saturated signal
 - **Surface Panel** (`rgba(9,15,28,0.74)` / `#090F1CBD`): the `panel-surface` utility — frosted glass containers.
 - **Surface Border** (`rgba(255,255,255,0.09)` / `#FFFFFF17`): hairline borders on panels, header, glass cards.
 - **Ink** (`text-slate-50`): primary body/heading text on dark.
-- **Muted** (`text-slate-300` / `text-slate-500`): secondary labels, subtitles, helper text.
+- **Muted** (`text-slate-300` / `text-slate-400`): secondary labels, subtitles, helper text. Kept at slate-400 (`#94A3B8`) rather than slate-500 — slate-500 falls below the 4.5:1 AA contrast minimum against this background.
+- **Chrome Muted** (`#94A3B8`): the inactive-state color for tool-switcher pills (text + dot) when a tool isn't the active one. Same value as Muted text above — one gray, two names, because the roles read differently (body helper text vs. an unselected nav state) even though the hex is identical.
 
 ### Named Rules
 **The One Signal Rule.** A screen shows exactly one tool accent at a time (its own), plus neutral chrome. Never mix two tool accents on the same screen outside the tool switcher itself.

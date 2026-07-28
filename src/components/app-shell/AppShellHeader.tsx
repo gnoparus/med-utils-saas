@@ -24,7 +24,7 @@ export function AppShellHeader({ toolId, rightSlot }: AppShellHeaderProps) {
         <div className="flex items-center">
           <Link
             to="/"
-            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3.5 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-300 transition-colors hover:bg-white/[0.06] hover:text-white"
+            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3.5 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-300 outline-hidden transition-colors hover:bg-white/[0.06] hover:text-white focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
           >
             <Home className="h-3.5 w-3.5" />
             Home
@@ -47,7 +47,7 @@ export function AppShellHeader({ toolId, rightSlot }: AppShellHeaderProps) {
               {activeTool.name}
             </h1>
           </div>
-          <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.26em] text-slate-500">
+          <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.26em] text-slate-400">
             {activeTool.subtitle}
           </p>
         </div>
@@ -59,7 +59,7 @@ export function AppShellHeader({ toolId, rightSlot }: AppShellHeaderProps) {
 
       <nav
         aria-label="Switch Shiftside tools"
-        className="-mx-4 mt-4 overflow-x-auto px-4 pb-1 scrollbar-none"
+        className="-mx-4 mt-4 overflow-x-auto px-4 pb-1 scrollbar-none [mask-image:linear-gradient(to_right,black_calc(100%-2rem),transparent)] [-webkit-mask-image:linear-gradient(to_right,black_calc(100%-2rem),transparent)]"
       >
         <div className="flex min-w-max gap-2.5">
           {shiftsideTools.map((tool) => {
@@ -71,19 +71,21 @@ export function AppShellHeader({ toolId, rightSlot }: AppShellHeaderProps) {
                 to={tool.route}
                 aria-current={isActive ? 'page' : undefined}
                 aria-label={`Open ${tool.name}`}
-                className="inline-flex shrink-0 items-center gap-2 rounded-full border px-3.5 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] transition-all duration-200"
+                className="inline-flex shrink-0 items-center gap-2 rounded-full border px-3.5 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] outline-hidden transition-all duration-200 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2"
                 style={
                   isActive
                     ? {
                         background: `rgba(${tool.rgb},0.16)`,
                         borderColor: `rgba(${tool.rgb},0.34)`,
                         color: tool.accent,
-                        boxShadow: `0 10px 24px rgba(${tool.rgb},0.14)`,
+                        boxShadow: `0 0 20px rgba(${tool.rgb},0.3)`,
+                        outlineColor: tool.accent,
                       }
                     : {
                         background: 'rgba(255,255,255,0.03)',
                         borderColor: 'rgba(255,255,255,0.08)',
                         color: '#94a3b8',
+                        outlineColor: tool.accent,
                       }
                 }
               >

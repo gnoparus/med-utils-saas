@@ -6,6 +6,7 @@
     "colorMeta": {
       "page-bg": { "role": "neutral", "displayName": "Page Base", "canonical": "oklch(16% 0.03 250)", "tonalRamp": ["#020617", "#04070F", "#07111D", "#0B1B2E", "#12283F", "#1C3A56", "#2E5578", "#4A76A0"] },
       "surface-panel": { "role": "neutral", "displayName": "Surface Panel", "canonical": "oklch(14% 0.02 250 / 0.74)", "tonalRamp": ["#020617", "#050B14", "#090F1C", "#0F1626", "#182238", "#243252", "#354670", "#4C5E8E"] },
+      "chrome-muted": { "role": "neutral", "displayName": "Chrome Muted", "canonical": "oklch(70% 0.03 250)", "tonalRamp": ["#1E293B", "#334155", "#475569", "#64748B", "#7C8CA3", "#94A3B8", "#C3CEDC", "#E2E8F0"] },
       "dose-cyan": { "role": "primary", "displayName": "Dose Cyan", "canonical": "oklch(88% 0.11 205)", "tonalRamp": ["#083344", "#0E5266", "#137389", "#1B95AC", "#3BBBD1", "#67E8F9", "#A6F3FC", "#D6FAFF"] },
       "abg-orange": { "role": "secondary", "displayName": "ABG Orange", "canonical": "oklch(82% 0.12 55)", "tonalRamp": ["#5A2C0C", "#803C10", "#A65017", "#C86A24", "#E48A44", "#FDBA74", "#FED4A5", "#FFEBD4" ] },
       "drips-sky": { "role": "secondary", "displayName": "Drips Sky", "canonical": "oklch(86% 0.09 230)", "tonalRamp": ["#0C3A52", "#155372", "#1E6E92", "#328BB2", "#54ABCF", "#7DD3FC", "#B0E4FD", "#DEF3FF"] },
@@ -53,7 +54,7 @@
       "refersTo": "nav-pill-active",
       "description": "Active tool tab in the horizontal tool switcher, glowing in that tool's own accent.",
       "html": "<a class=\"ds-nav-pill ds-nav-pill--active\" aria-current=\"page\"><span class=\"ds-nav-dot\"></span>Dose</a>",
-      "css": ".ds-nav-pill { display: inline-flex; align-items: center; gap: 10px; padding: 8px 14px; border-radius: 9999px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.22em; border: 1px solid transparent; } .ds-nav-pill--active { background: rgba(103,232,249,0.16); border-color: rgba(103,232,249,0.34); color: #67E8F9; box-shadow: 0 10px 24px rgba(103,232,249,0.14); } .ds-nav-dot { width: 8px; height: 8px; border-radius: 9999px; background: #67E8F9; box-shadow: 0 0 12px rgba(103,232,249,0.55); }"
+      "css": ".ds-nav-pill { display: inline-flex; align-items: center; gap: 10px; padding: 8px 14px; border-radius: 9999px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.22em; border: 1px solid transparent; outline: none; } .ds-nav-pill:focus-visible { outline: 2px solid #67E8F9; outline-offset: 2px; } .ds-nav-pill--active { background: rgba(103,232,249,0.16); border-color: rgba(103,232,249,0.34); color: #67E8F9; box-shadow: 0 0 20px rgba(103,232,249,0.3); } .ds-nav-dot { width: 8px; height: 8px; border-radius: 9999px; background: #67E8F9; box-shadow: 0 0 12px rgba(103,232,249,0.55); }"
     },
     {
       "name": "Nav Pill (inactive)",
