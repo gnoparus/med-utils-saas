@@ -817,6 +817,7 @@ function NihssTab() {
 type Mode = 'gcs' | 'nihss'
 
 export default function NeuroSnap({ embedded }: { embedded?: boolean } = {}) {
+  const ContentTag = embedded ? 'div' : 'main'
   const [mode, setMode] = useState<Mode>('gcs')
 
   useEffect(() => { trackToolOpened('neuro') }, [])
@@ -856,6 +857,7 @@ export default function NeuroSnap({ embedded }: { embedded?: boolean } = {}) {
       <div className="relative flex h-full flex-col">
         {!embedded && <AppShellHeader toolId="neuro" />}
 
+        <ContentTag id={embedded ? undefined : 'main-content'} tabIndex={-1} className="flex min-h-0 flex-1 flex-col outline-none">
         {/* ── Mode tab strip ── */}
         <div className="shrink-0 px-4 mb-4">
           <div
@@ -922,6 +924,7 @@ export default function NeuroSnap({ embedded }: { embedded?: boolean } = {}) {
             )}
           </AnimatePresence>
         </div>
+        </ContentTag>
       </div>
     </div>
   )

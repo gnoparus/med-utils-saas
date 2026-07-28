@@ -254,6 +254,7 @@ function DangerBanner({ drug, dose }: { drug: PresssorDrug; dose: number }) {
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function DripDrop({ embedded }: { embedded?: boolean } = {}) {
+  const ContentTag = embedded ? 'div' : 'main'
   const [activeDrug, setActiveDrug] = useState<PresssorDrug>(PRESSOR_DRUGS[0])
   const [dose, setDose] = useState(activeDrug.doseRange.min)
   const [weightKg, setWeightKg] = useState(70)
@@ -333,6 +334,7 @@ export default function DripDrop({ embedded }: { embedded?: boolean } = {}) {
       <div className="relative flex h-full flex-col">
         {!embedded && <AppShellHeader toolId="drips" />}
 
+        <ContentTag id={embedded ? undefined : 'main-content'} tabIndex={-1} className="flex min-h-0 flex-1 flex-col outline-none">
         {/* ── Drug Selector strip ── */}
         <div className="shrink-0 mb-3">
           <DrugSelector drugs={PRESSOR_DRUGS} selected={activeDrug} onSelect={handleDrugChange} />
@@ -560,6 +562,7 @@ export default function DripDrop({ embedded }: { embedded?: boolean } = {}) {
             </p>
           </div>
         </div>
+        </ContentTag>
       </div>
     </div>
   )

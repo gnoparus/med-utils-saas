@@ -10,6 +10,13 @@ import {
 
 interface AppShellHeaderProps {
   toolId: ShiftsideToolId
+  /**
+   * Slot rendered on the header's trailing edge. Defaults to the active
+   * tool's accent color per DESIGN.md's One Signal Rule — only reach for an
+   * unrelated color here if the tool already has its own established
+   * in-screen color system (e.g. ChartNinja's per-template glow), not as a
+   * one-off choice.
+   */
   rightSlot?: ReactNode
 }
 
@@ -43,6 +50,10 @@ export function AppShellHeader({ toolId, rightSlot }: AppShellHeaderProps) {
     }
 
     updateFade()
+    el.querySelector('[aria-current="page"]')?.scrollIntoView?.({
+      inline: 'center',
+      block: 'nearest',
+    })
     el.addEventListener('scroll', updateFade, { passive: true })
     window.addEventListener('resize', updateFade)
     return () => {
@@ -52,15 +63,22 @@ export function AppShellHeader({ toolId, rightSlot }: AppShellHeaderProps) {
   }, [])
 
   return (
-    <div className="sticky top-0 z-30 shrink-0 border-b border-white/8 bg-slate-950/84 px-4 pb-3 pt-[calc(env(safe-area-inset-top)+0.85rem)] backdrop-blur-xl">
-      <div className="grid grid-cols-[6rem_1fr_6rem] items-center gap-3">
+    <>
+      <a
+        href="#main-content"
+        className="sr-only focus-visible:not-sr-only focus-visible:fixed focus-visible:left-4 focus-visible:top-4 focus-visible:z-50 focus-visible:rounded-full focus-visible:bg-slate-900 focus-visible:px-4 focus-visible:py-2 focus-visible:text-sm focus-visible:font-semibold focus-visible:text-white focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+      >
+        Skip to content
+      </a>
+      <div className="sticky top-0 z-30 shrink-0 border-b border-white/8 bg-slate-950/84 px-4 pb-3 pt-[calc(env(safe-area-inset-top)+0.85rem)] backdrop-blur-xl">
+      <div className="grid grid-cols-[auto_1fr_auto] items-center gap-3 sm:grid-cols-[6rem_1fr_6rem]">
         <div className="flex items-center">
           <Link
             to="/"
-            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3.5 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-300 outline-hidden transition-colors hover:bg-white/[0.06] hover:text-white focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-300 outline-hidden transition-colors hover:bg-white/[0.06] hover:text-white focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:px-3.5"
           >
             <Home className="h-3.5 w-3.5" />
-            Home
+            <span className="sr-only sm:not-sr-only">Home</span>
           </Link>
         </div>
 
@@ -137,6 +155,7 @@ export function AppShellHeader({ toolId, rightSlot }: AppShellHeaderProps) {
           })}
         </div>
       </nav>
-    </div>
+      </div>
+    </>
   )
 }

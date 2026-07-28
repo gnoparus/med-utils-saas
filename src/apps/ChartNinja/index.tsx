@@ -563,6 +563,7 @@ export default function ChartNinja() {
         }
       />
 
+      <main id="main-content" tabIndex={-1} className="flex min-h-0 flex-1 flex-col outline-none">
       {/* ── Template selector ──────────────────────────────────────────── */}
       <div className="shrink-0 mb-4">
         <TemplateSelector selected={selectedTemplate} onSelect={handleTemplateChange} />
@@ -674,6 +675,7 @@ export default function ChartNinja() {
           </a>
         </div>
       </div>
+      </main>
     </div>
   )
 }
