@@ -9,7 +9,7 @@ MedUtils is a high-performance suite of 6 clinician utilities designed for speed
 ## 🤖 Agent-Friendly Context
 - **Design Pattern:** All tools are under `src/apps/[AppName]`. Shared UI components are in `src/components/ui`.
 - **Pure Logic:** Clinical calculations are decoupled into `src/lib/` as pure, testable functions.
-- **State:** No backend. Features are unlocked via `localStorage` JWTs.
+- **State:** Subscription entitlements are fetched from `/api/entitlements` (fallback: free tier if unavailable).
 - **Feedback:** Uses `navigator.vibrate` (Haptics) and standard CSS animations for interaction feedback.
 
 ---

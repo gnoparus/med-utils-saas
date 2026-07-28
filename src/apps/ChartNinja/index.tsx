@@ -12,6 +12,7 @@ import {
 import { AppShellHeader } from '../../components/app-shell'
 import { trackToolOpened, trackFirstResultCompleted, trackPaywallViewed, trackCheckoutStarted } from '../../lib/analytics'
 import { STRIPE_MONTHLY_URL } from '../../lib/billing'
+import { useEntitlements } from '../../lib/use-entitlements'
 import {
   NOTE_TEMPLATES,
   countFilledFields,
@@ -478,10 +479,12 @@ function SnippetPanel({
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function ChartNinja() {
+  const { entitlements } = useEntitlements()
   const [selectedTemplate, setSelectedTemplate] = useState<NoteTemplate>(NOTE_TEMPLATES[0])
   const [fieldValues, setFieldValues] = useState<Record<string, Record<string, string | string[]>>>({})
   const paywallRef = useRef<HTMLDivElement>(null)
   const firstResultFired = useRef(false)
+  const hasProAccess = entitlements.notesCustomTemplates
 
   useEffect(() => { trackToolOpened('notes') }, [])
 
@@ -493,6 +496,7 @@ export default function ChartNinja() {
   }, [fieldValues])
 
   useEffect(() => {
+    if (hasProAccess) return
     const el = paywallRef.current
     if (!el) return
     const observer = new IntersectionObserver(
@@ -506,7 +510,7 @@ export default function ChartNinja() {
     )
     observer.observe(el)
     return () => observer.disconnect()
-  }, [])
+  }, [hasProAccess])
 
   const currentValues = fieldValues[selectedTemplate.id] ?? {}
 
@@ -641,38 +645,40 @@ export default function ChartNinja() {
         </motion.button>
 
         {/* Pro teaser */}
-        <div
-          ref={paywallRef}
-          className="rounded-[1.8rem] border px-5 py-4 flex items-center gap-3"
-          style={{ background: 'rgba(167,139,250,0.07)', borderColor: 'rgba(167,139,250,0.22)' }}
-        >
+        {!hasProAccess && (
           <div
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl"
-            style={{ background: 'rgba(167,139,250,0.15)', border: '1px solid rgba(167,139,250,0.25)' }}
+            ref={paywallRef}
+            className="rounded-[1.8rem] border px-5 py-4 flex items-center gap-3"
+            style={{ background: 'rgba(167,139,250,0.07)', borderColor: 'rgba(167,139,250,0.22)' }}
           >
-            <Lock size={16} className="text-purple-400" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="text-xs font-black text-slate-100">Shiftside Pro</div>
-            <div className="text-[11px] text-slate-500 mt-0.5 leading-snug">
-              Custom templates, expanded bedside documentation modes, voice dictation, and export tools.
+            <div
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl"
+              style={{ background: 'rgba(167,139,250,0.15)', border: '1px solid rgba(167,139,250,0.25)' }}
+            >
+              <Lock size={16} className="text-purple-400" />
             </div>
+            <div className="flex-1 min-w-0">
+              <div className="text-xs font-black text-slate-100">Shiftside Pro</div>
+              <div className="text-[11px] text-slate-500 mt-0.5 leading-snug">
+                Custom templates, expanded bedside documentation modes, voice dictation, and export tools.
+              </div>
+            </div>
+            <a
+              href={STRIPE_MONTHLY_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => { triggerHaptic([10, 20, 40]); trackCheckoutStarted('monthly') }}
+              className="shrink-0 rounded-2xl px-3.5 py-2 text-[11px] font-black no-underline"
+              style={{
+                background: 'rgba(167,139,250,0.2)',
+                border: '1px solid rgba(167,139,250,0.3)',
+                color: '#a78bfa',
+              }}
+            >
+              Unlock Pro
+            </a>
           </div>
-          <a
-            href={STRIPE_MONTHLY_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => { triggerHaptic([10, 20, 40]); trackCheckoutStarted('monthly') }}
-            className="shrink-0 rounded-2xl px-3.5 py-2 text-[11px] font-black no-underline"
-            style={{
-              background: 'rgba(167,139,250,0.2)',
-              border: '1px solid rgba(167,139,250,0.3)',
-              color: '#a78bfa',
-            }}
-          >
-            Unlock Pro
-          </a>
-        </div>
+        )}
       </div>
     </div>
   )

@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { AppShellHeader } from "../../components/app-shell";
 import { trackToolOpened, trackFirstResultCompleted } from "../../lib/analytics";
+import { useEntitlements } from "../../lib/use-entitlements";
 
 // ─── Broselow Band Data ───────────────────────────────────────────────────────
 const BROSELOW_BANDS = [
@@ -127,6 +128,7 @@ interface MedCardProps {
     accent: string;
     accentBg: string;
     accentBorder: string;
+    tier: "free" | "pro";
     pulse?: boolean;
     locked?: boolean;
   };
@@ -365,6 +367,8 @@ function NumpadWeight({
 
 // ─── Main NeoDose Component ───────────────────────────────────────────────────
 export default function NeoDose({ embedded }: { embedded?: boolean } = {}) {
+  const { entitlements } = useEntitlements();
+  const hasProAccess = entitlements.neodoseAdvancedPharmacy;
   const [weight, setWeight] = useState(10);
   const [showNumpad, setShowNumpad] = useState(false);
   const band = getBand(weight);
@@ -386,7 +390,7 @@ export default function NeoDose({ embedded }: { embedded?: boolean } = {}) {
       navigator.vibrate(6);
   };
 
-  const meds = useMemo(
+  const meds = useMemo<MedCardProps["med"][]>(
     () => [
       // ── FREE TIER ─────────────────────────────────────────────
       {
@@ -402,6 +406,7 @@ export default function NeoDose({ embedded }: { embedded?: boolean } = {}) {
         accent: "#ef4444",
         accentBg: "rgba(239,68,68,0.08)",
         accentBorder: "rgba(239,68,68,0.3)",
+        tier: "free",
         pulse: true,
       },
       {
@@ -416,6 +421,7 @@ export default function NeoDose({ embedded }: { embedded?: boolean } = {}) {
         accent: "#f59e0b",
         accentBg: "rgba(245,158,11,0.08)",
         accentBorder: "rgba(245,158,11,0.3)",
+        tier: "free",
       },
       {
         name: "Fluid Bolus",
@@ -429,6 +435,7 @@ export default function NeoDose({ embedded }: { embedded?: boolean } = {}) {
         accent: "#3b82f6",
         accentBg: "rgba(59,130,246,0.08)",
         accentBorder: "rgba(59,130,246,0.3)",
+        tier: "free",
       },
       // ── PRO TIER (locked) ──────────────────────────────────────
       {
@@ -444,7 +451,8 @@ export default function NeoDose({ embedded }: { embedded?: boolean } = {}) {
         accent: "#a855f7",
         accentBg: "rgba(168,85,247,0.08)",
         accentBorder: "rgba(168,85,247,0.3)",
-        locked: true,
+        tier: "pro",
+        locked: !hasProAccess,
       },
       {
         name: "Atropine",
@@ -459,7 +467,8 @@ export default function NeoDose({ embedded }: { embedded?: boolean } = {}) {
         accent: "#06b6d4",
         accentBg: "rgba(6,182,212,0.08)",
         accentBorder: "rgba(6,182,212,0.3)",
-        locked: true,
+        tier: "pro",
+        locked: !hasProAccess,
       },
       {
         name: "Dextrose 10%",
@@ -473,14 +482,15 @@ export default function NeoDose({ embedded }: { embedded?: boolean } = {}) {
         accent: "#10b981",
         accentBg: "rgba(16,185,129,0.08)",
         accentBorder: "rgba(16,185,129,0.3)",
-        locked: true,
+        tier: "pro",
+        locked: !hasProAccess,
       },
     ],
-    [weight],
+    [weight, hasProAccess],
   );
 
-  const freeMeds = meds.filter((m) => !m.locked);
-  const proMeds = meds.filter((m) => m.locked);
+  const freeMeds = meds.filter((m) => m.tier === "free");
+  const proMeds = meds.filter((m) => m.tier === "pro");
 
   return (
     <div
@@ -686,7 +696,7 @@ export default function NeoDose({ embedded }: { embedded?: boolean } = {}) {
           </span>
           <div className="flex-1 h-px bg-slate-800" />
           <span className="text-[10px] text-amber-400 font-bold uppercase tracking-widest bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-full">
-            Shiftside Pro
+            {hasProAccess ? "Pro Active" : "Shiftside Pro"}
           </span>
         </div>
 
@@ -697,33 +707,35 @@ export default function NeoDose({ embedded }: { embedded?: boolean } = {}) {
         </AnimatePresence>
 
         {/* Unlock CTA */}
-        <div className="pt-4 pb-4">
-          <motion.button
-            whileTap={{ scale: 0.97 }}
-            className="w-full py-4 rounded-3xl font-bold text-base flex items-center justify-center gap-3 relative overflow-hidden"
-            style={{
-              background:
-                "linear-gradient(135deg, rgba(124,58,237,0.3), rgba(16,185,129,0.2))",
-              border: "1px solid rgba(124,58,237,0.4)",
-            }}
-          >
-            <motion.div
-              className="absolute inset-0 pointer-events-none"
-              animate={{
-                background: [
-                  "linear-gradient(100deg, transparent 20%, rgba(255,255,255,0.04) 50%, transparent 80%)",
-                  "linear-gradient(100deg, transparent 60%, rgba(255,255,255,0.04) 90%, transparent 100%)",
-                ],
+        {!hasProAccess && (
+          <div className="pt-4 pb-4">
+            <motion.button
+              whileTap={{ scale: 0.97 }}
+              className="w-full py-4 rounded-3xl font-bold text-base flex items-center justify-center gap-3 relative overflow-hidden"
+              style={{
+                background:
+                  "linear-gradient(135deg, rgba(124,58,237,0.3), rgba(16,185,129,0.2))",
+                border: "1px solid rgba(124,58,237,0.4)",
               }}
-              transition={{ duration: 2.5, repeat: Infinity, ease: "linear" }}
-            />
-            <Lock size={16} className="text-purple-300" />
-            <span className="text-slate-100">Unlock Shiftside Pro</span>
-            <span className="bg-gradient-to-r from-purple-500 to-emerald-500 text-white text-xs px-3 py-1 rounded-full font-black">
-              Full toolkit
-            </span>
-          </motion.button>
-        </div>
+            >
+              <motion.div
+                className="absolute inset-0 pointer-events-none"
+                animate={{
+                  background: [
+                    "linear-gradient(100deg, transparent 20%, rgba(255,255,255,0.04) 50%, transparent 80%)",
+                    "linear-gradient(100deg, transparent 60%, rgba(255,255,255,0.04) 90%, transparent 100%)",
+                  ],
+                }}
+                transition={{ duration: 2.5, repeat: Infinity, ease: "linear" }}
+              />
+              <Lock size={16} className="text-purple-300" />
+              <span className="text-slate-100">Unlock Shiftside Pro</span>
+              <span className="bg-gradient-to-r from-purple-500 to-emerald-500 text-white text-xs px-3 py-1 rounded-full font-black">
+                Full toolkit
+              </span>
+            </motion.button>
+          </div>
+        )}
       </div>
     </div>
   );

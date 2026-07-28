@@ -13,6 +13,7 @@ import { IVBagAnimation } from './IVBagAnimation'
 import { RadialDial } from './RadialDial'
 import { trackToolOpened, trackFirstResultCompleted, trackPaywallViewed, trackCheckoutStarted } from '../../lib/analytics'
 import { STRIPE_MONTHLY_URL } from '../../lib/billing'
+import { useEntitlements } from '../../lib/use-entitlements'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -254,12 +255,14 @@ function DangerBanner({ drug, dose }: { drug: PresssorDrug; dose: number }) {
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function DripDrop({ embedded }: { embedded?: boolean } = {}) {
+  const { entitlements } = useEntitlements()
   const [activeDrug, setActiveDrug] = useState<PresssorDrug>(PRESSOR_DRUGS[0])
   const [dose, setDose] = useState(activeDrug.doseRange.min)
   const [weightKg, setWeightKg] = useState(70)
   const [copied, setCopied] = useState(false)
   const paywallRef = useRef<HTMLDivElement>(null)
   const firstResultFired = useRef(false)
+  const hasProAccess = entitlements.dripsCustomConcentrations
 
   useEffect(() => { trackToolOpened('drips') }, [])
 
@@ -271,6 +274,7 @@ export default function DripDrop({ embedded }: { embedded?: boolean } = {}) {
   }, [dose, weightKg])
 
   useEffect(() => {
+    if (hasProAccess) return
     const el = paywallRef.current
     if (!el) return
     const observer = new IntersectionObserver(
@@ -284,7 +288,7 @@ export default function DripDrop({ embedded }: { embedded?: boolean } = {}) {
     )
     observer.observe(el)
     return () => observer.disconnect()
-  }, [])
+  }, [hasProAccess])
 
   const handleDrugChange = (d: PresssorDrug) => {
     setActiveDrug(d)
@@ -516,38 +520,40 @@ export default function DripDrop({ embedded }: { embedded?: boolean } = {}) {
           </motion.button>
 
           {/* ── Premium Upsell ── */}
-          <div ref={paywallRef} className="relative overflow-hidden rounded-[1.8rem] border border-blue-400/18 bg-blue-500/5 p-5 mt-4">
-            <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(circle at top right, rgba(59,130,246,0.14), transparent 40%)' }} />
-            <div className="relative flex items-center gap-2 text-blue-300 mb-3">
-              <Lock size={14} />
-              <div className="text-[11px] font-black uppercase tracking-[0.26em]">Shiftside Pro</div>
-            </div>
-            <div className="relative grid grid-cols-2 gap-2 blur-[1.5px] pointer-events-none mb-4">
-              {['Custom Concentrations', 'Saved Drug Profiles', 'Titration Log', 'Weight-Based Targets'].map((f) => (
-                <div key={f} className="rounded-2xl border border-blue-300/14 bg-slate-950/70 px-3 py-3">
-                  <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-blue-200/70">{f}</div>
+          {!hasProAccess && (
+            <div ref={paywallRef} className="relative overflow-hidden rounded-[1.8rem] border border-blue-400/18 bg-blue-500/5 p-5 mt-4">
+              <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(circle at top right, rgba(59,130,246,0.14), transparent 40%)' }} />
+              <div className="relative flex items-center gap-2 text-blue-300 mb-3">
+                <Lock size={14} />
+                <div className="text-[11px] font-black uppercase tracking-[0.26em]">Shiftside Pro</div>
+              </div>
+              <div className="relative grid grid-cols-2 gap-2 blur-[1.5px] pointer-events-none mb-4">
+                {['Custom Concentrations', 'Saved Drug Profiles', 'Titration Log', 'Weight-Based Targets'].map((f) => (
+                  <div key={f} className="rounded-2xl border border-blue-300/14 bg-slate-950/70 px-3 py-3">
+                    <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-blue-200/70">{f}</div>
+                  </div>
+                ))}
+              </div>
+              <a
+                href={STRIPE_MONTHLY_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => trackCheckoutStarted('monthly')}
+                className="relative flex items-start gap-3 rounded-[1.4rem] border border-blue-300/18 bg-slate-950/75 p-4 no-underline"
+              >
+                <Lock size={16} className="mt-0.5 shrink-0 text-blue-300" />
+                <div>
+                  <div className="text-sm font-black text-blue-100">Unlock Shiftside Pro</div>
+                  <p className="mt-1 text-xs leading-relaxed text-blue-50/75">
+                    {activeDrug.premiumConcs.length} custom concentrations for {activeDrug.name}, titration history, and saved profiles.
+                  </p>
                 </div>
-              ))}
+                <div className="ml-auto shrink-0 rounded-full bg-blue-300 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-950">
+                  Upgrade
+                </div>
+              </a>
             </div>
-            <a
-              href={STRIPE_MONTHLY_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => trackCheckoutStarted('monthly')}
-              className="relative flex items-start gap-3 rounded-[1.4rem] border border-blue-300/18 bg-slate-950/75 p-4 no-underline"
-            >
-              <Lock size={16} className="mt-0.5 shrink-0 text-blue-300" />
-              <div>
-                <div className="text-sm font-black text-blue-100">Unlock Shiftside Pro</div>
-                <p className="mt-1 text-xs leading-relaxed text-blue-50/75">
-                  {activeDrug.premiumConcs.length} custom concentrations for {activeDrug.name}, titration history, and saved profiles.
-                </p>
-              </div>
-              <div className="ml-auto shrink-0 rounded-full bg-blue-300 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-950">
-                Upgrade
-              </div>
-            </a>
-          </div>
+          )}
 
           {/* ── Safety Disclaimer ── */}
           <div className="mt-4 mb-2 rounded-[1.6rem] border border-red-400/16 bg-red-500/5 px-4 py-3">

@@ -16,7 +16,7 @@ export default function ThankYou() {
         </div>
         <h1 className="text-2xl font-black text-white mb-3">You're on Pro!</h1>
         <p className="text-base text-slate-400 leading-relaxed mb-8">
-          Welcome to Shiftside Pro. All tools are now unlocked — faster workflows, custom concentrations, and more.
+          Welcome to Shiftside Pro. Use your passwordless email sign-in to load your subscription entitlements across devices.
         </p>
         <Link
           to="/dripdrop"
