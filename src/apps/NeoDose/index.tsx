@@ -489,6 +489,7 @@ export default function NeoDose({ embedded }: { embedded?: boolean } = {}) {
     >
       {!embedded && <AppShellHeader toolId="dose" />}
 
+      <div id="main-content" tabIndex={-1} className="flex min-h-0 flex-1 flex-col outline-none">
       {/* ── Broselow color hero header ─────────────────────────── */}
       <motion.div
         className="shrink-0 px-5 pb-5 relative overflow-hidden"
@@ -661,7 +662,7 @@ export default function NeoDose({ embedded }: { embedded?: boolean } = {}) {
       </AnimatePresence>
 
       {/* ── Scrollable Med Cards ───────────────────────────────── */}
-      <div id="main-content" tabIndex={-1} className="flex-1 overflow-y-auto px-4 py-5 space-y-3 pb-24 outline-none">
+      <div className="flex-1 overflow-y-auto px-4 py-5 space-y-3 pb-24">
         {/* Section: Free */}
         <div className="flex items-center gap-3 mb-1">
           <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">
@@ -724,6 +725,7 @@ export default function NeoDose({ embedded }: { embedded?: boolean } = {}) {
             </span>
           </motion.button>
         </div>
+      </div>
       </div>
     </div>
   );

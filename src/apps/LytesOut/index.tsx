@@ -407,6 +407,7 @@ export default function LytesOut() {
       <div className="relative flex h-full flex-col">
         <AppShellHeader toolId="lytes" />
 
+        <div id="main-content" tabIndex={-1} className="flex min-h-0 flex-1 flex-col outline-none">
         {/* ── Electrolyte tab strip ── */}
         <div className="shrink-0 px-4 mb-3">
           <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
@@ -438,7 +439,7 @@ export default function LytesOut() {
         </div>
 
         {/* ── Scrollable content ── */}
-        <div id="main-content" tabIndex={-1} className="flex-1 overflow-y-auto px-4 pb-6 outline-none">
+        <div className="flex-1 overflow-y-auto px-4 pb-6">
           {/* Quick presets */}
           <div className="flex gap-2 overflow-x-auto pb-2 mb-4 scrollbar-none">
             {LYTE_PRESETS[activeId].map(p => (
@@ -715,6 +716,7 @@ export default function LytesOut() {
               </motion.div>
             )}
           </AnimatePresence>
+        </div>
         </div>
       </div>
     </div>

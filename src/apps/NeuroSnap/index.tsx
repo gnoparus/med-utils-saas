@@ -856,6 +856,7 @@ export default function NeuroSnap({ embedded }: { embedded?: boolean } = {}) {
       <div className="relative flex h-full flex-col">
         {!embedded && <AppShellHeader toolId="neuro" />}
 
+        <div id="main-content" tabIndex={-1} className="flex min-h-0 flex-1 flex-col outline-none">
         {/* ── Mode tab strip ── */}
         <div className="shrink-0 px-4 mb-4">
           <div
@@ -897,7 +898,7 @@ export default function NeuroSnap({ embedded }: { embedded?: boolean } = {}) {
         </div>
 
         {/* ── Scrollable content ── */}
-        <div id="main-content" tabIndex={-1} className="flex-1 overflow-y-auto px-4 pb-10 outline-none" style={{ WebkitOverflowScrolling: 'touch' }}>
+        <div className="flex-1 overflow-y-auto px-4 pb-10" style={{ WebkitOverflowScrolling: 'touch' }}>
           <AnimatePresence mode="wait">
             {mode === 'gcs' ? (
               <motion.div
@@ -921,6 +922,7 @@ export default function NeuroSnap({ embedded }: { embedded?: boolean } = {}) {
               </motion.div>
             )}
           </AnimatePresence>
+        </div>
         </div>
       </div>
     </div>

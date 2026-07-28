@@ -333,6 +333,7 @@ export default function DripDrop({ embedded }: { embedded?: boolean } = {}) {
       <div className="relative flex h-full flex-col">
         {!embedded && <AppShellHeader toolId="drips" />}
 
+        <div id="main-content" tabIndex={-1} className="flex min-h-0 flex-1 flex-col outline-none">
         {/* ── Drug Selector strip ── */}
         <div className="shrink-0 mb-3">
           <DrugSelector drugs={PRESSOR_DRUGS} selected={activeDrug} onSelect={handleDrugChange} />
@@ -384,7 +385,7 @@ export default function DripDrop({ embedded }: { embedded?: boolean } = {}) {
         <DangerBanner drug={activeDrug} dose={dose} />
 
         {/* ── Scrollable body ── */}
-        <div id="main-content" tabIndex={-1} className="flex-1 overflow-y-auto pb-8 px-4 outline-none">
+        <div className="flex-1 overflow-y-auto pb-8 px-4">
 
           {/* ── Dial + IV Bag ── */}
           <div className="flex items-start justify-center gap-4 mt-4">
@@ -559,6 +560,7 @@ export default function DripDrop({ embedded }: { embedded?: boolean } = {}) {
               Drip calculations support bedside decision-making but do not replace clinical judgment. Verify all doses, concentration, patient weight, and pump settings per institutional protocol before infusion.
             </p>
           </div>
+        </div>
         </div>
       </div>
     </div>
