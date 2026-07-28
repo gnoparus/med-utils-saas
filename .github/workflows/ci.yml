@@ -54,18 +54,22 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-report
+          name: coverage-report-${{ matrix.node-version }}
           path: coverage
 
   vercel-preview-note:
     name: Vercel Preview Note
     runs-on: ubuntu-latest
     needs: build-and-test
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    permissions:
+      pull-requests: write
     steps:
       - name: Add PR comment about Vercel preview
         # This step does not deploy — Vercel will create previews automatically when linked.
         # We add a lightweight informational comment so PR authors know previews are available.
+        # continue-on-error: this comment is informational only and must never redden CI.
+        continue-on-error: true
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -83,7 +87,7 @@ jobs:
 
               \`med-utils-saas\` CI
               `
-              await github.issues.createComment({
+              await github.rest.issues.createComment({
                 ...context.repo,
                 issue_number: pr.number,
                 body,
