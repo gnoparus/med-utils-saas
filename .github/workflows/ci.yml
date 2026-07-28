@@ -75,14 +75,14 @@ jobs:
               core.info('Not a PR event — skipping comment.')
             } else {
               const body = `
-CI checks completed ✅
+              CI checks completed ✅
 
-- Lint, typecheck and tests passed.
-- Vercel will (or already has) created a preview deployment for this PR if Vercel is configured for the repo.
-- If you don't see a Vercel preview, check the Vercel dashboard or the GitHub checks UI for the Vercel deploy step.
+              - Lint, typecheck and tests passed.
+              - Vercel will (or already has) created a preview deployment for this PR if Vercel is configured for the repo.
+              - If you don't see a Vercel preview, check the Vercel dashboard or the GitHub checks UI for the Vercel deploy step.
 
-\`med-utils-saas\` CI
-`
+              \`med-utils-saas\` CI
+              `
               await github.issues.createComment({
                 ...context.repo,
                 issue_number: pr.number,
