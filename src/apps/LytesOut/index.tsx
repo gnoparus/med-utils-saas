@@ -161,14 +161,15 @@ function RepleteCard({
           </div>
         )}
 
-        {/* Dose + Rate chips */}
+        {/* Dose + Rate readouts — divider between columns instead of two
+            individually-bordered mini-cards inside this card (nested-cards). */}
         {opt.dose !== '—' && (
-          <div className="grid grid-cols-2 gap-2 mb-4">
-            <div className="rounded-2xl border border-white/8 bg-slate-950/60 px-3 py-2.5">
+          <div className="grid grid-cols-2 divide-x divide-white/8 mb-4">
+            <div className="px-3">
               <div className="text-[9px] font-black uppercase tracking-widest text-slate-500 mb-1">Dose</div>
               <div className="text-xs font-black text-white leading-snug">{opt.dose}</div>
             </div>
-            <div className="rounded-2xl border border-white/8 bg-slate-950/60 px-3 py-2.5">
+            <div className="px-3">
               <div className="text-[9px] font-black uppercase tracking-widest text-slate-500 mb-1">Rate</div>
               <div className="text-xs font-black text-white leading-snug">{opt.rate}</div>
             </div>
@@ -362,7 +363,7 @@ export default function LytesOut() {
         />
       </AnimatePresence>
 
-      <div className="relative flex h-full flex-col">
+      <div className="relative mx-auto flex h-full w-full max-w-md flex-col lg:max-w-lg">
         <AppShellHeader toolId="lytes" />
 
         <main id="main-content" tabIndex={-1} className="flex min-h-0 flex-1 flex-col outline-none">
@@ -467,7 +468,7 @@ export default function LytesOut() {
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="mt-4 rounded-2xl border border-white/8 bg-slate-950/60 px-4 py-2.5 text-center"
+                  className="mt-4 border-t border-white/8 pt-3 text-center"
                 >
                   <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-500">
                     Deficit Estimate
@@ -541,10 +542,12 @@ export default function LytesOut() {
               <Zap size={16} />
               <div className="text-[11px] font-black uppercase tracking-[0.26em]">Shiftside Pro</div>
             </div>
-            <div className="relative grid grid-cols-2 gap-2 blur-[1.5px] pointer-events-none mb-4">
+            {/* Locked feature list — plain rows (accent bar, not per-item
+                mini-cards) inside the paywall card (nested-cards). */}
+            <div className="relative grid grid-cols-2 gap-x-3 gap-y-2.5 blur-[1.5px] pointer-events-none mb-4">
               {['Weight-Based Dosing', 'Anion Gap & ΔΔ', 'Refeeding Protocol', 'Corrected Ca'].map(f => (
-                <div key={f} className="rounded-2xl border border-yellow-300/14 bg-slate-950/70 px-3 py-3">
-                  <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-yellow-200/70">{f}</div>
+                <div key={f} className="border-l-2 border-yellow-300/30 pl-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.18em] text-yellow-200/70">
+                  {f}
                 </div>
               ))}
             </div>

@@ -620,7 +620,7 @@ export default function TippingPoint({ embedded }: { embedded?: boolean } = {}) 
         }}
       />
 
-      <div className="relative flex h-full flex-col">
+      <div className={embedded ? 'relative flex h-full w-full flex-col' : 'relative mx-auto flex h-full w-full max-w-md flex-col lg:max-w-lg'}>
         {!embedded && <AppShellHeader toolId="abg" />}
 
         <ContentTag id={embedded ? undefined : 'main-content'} tabIndex={-1} className="flex-1 overflow-y-auto px-4 pb-8 outline-none">

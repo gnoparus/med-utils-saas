@@ -315,7 +315,7 @@ export default function DripDrop({ embedded }: { embedded?: boolean } = {}) {
         />
       </AnimatePresence>
 
-      <div className="relative flex h-full flex-col">
+      <div className={embedded ? 'relative flex h-full w-full flex-col' : 'relative mx-auto flex h-full w-full max-w-md flex-col lg:max-w-lg'}>
         {!embedded && <AppShellHeader toolId="drips" />}
 
         <ContentTag id={embedded ? undefined : 'main-content'} tabIndex={-1} className="flex min-h-0 flex-1 flex-col outline-none">
@@ -435,8 +435,10 @@ export default function DripDrop({ embedded }: { embedded?: boolean } = {}) {
             style={{ background: 'rgba(2,6,23,0.82)', borderColor: s.border, boxShadow: `0 0 40px rgba(${s.rgb},0.08)` }}
           >
             <div className="absolute inset-0 pointer-events-none" style={{ background: `radial-gradient(circle at 80% 0%, rgba(${s.rgb},0.12), transparent 50%)` }} />
-            <div className="relative grid grid-cols-3 gap-3 text-center">
-              <div className="rounded-2xl border border-white/8 bg-slate-950/70 p-3">
+            {/* Dose/Weight/Rate readouts — dividers instead of individually
+                bordered stat tiles inside the result card (nested-cards). */}
+            <div className="relative grid grid-cols-3 divide-x divide-white/10 text-center">
+              <div className="px-3">
                 <div className="text-[10px] font-black uppercase tracking-[0.22em] text-slate-500">Dose</div>
                 <AnimatePresence mode="wait">
                   <motion.div
@@ -452,12 +454,12 @@ export default function DripDrop({ embedded }: { embedded?: boolean } = {}) {
                 </AnimatePresence>
                 <div className="text-[9px] text-slate-400 mt-0.5 leading-tight">{activeDrug.unit}</div>
               </div>
-              <div className="rounded-2xl border border-white/8 bg-slate-950/70 p-3">
+              <div className="px-3">
                 <div className="text-[10px] font-black uppercase tracking-[0.22em] text-slate-500">Weight</div>
                 <div className="text-lg font-black text-white mt-1 tabular-nums">{weightKg}</div>
                 <div className="text-[9px] text-slate-400 mt-0.5">kg</div>
               </div>
-              <div className="rounded-2xl p-3" style={{ background: s.panel, border: `1px solid ${s.border}` }}>
+              <div className="px-3">
                 <div className="text-[10px] font-black uppercase tracking-[0.22em] text-slate-500">Rate</div>
                 <AnimatePresence mode="wait">
                   <motion.div
@@ -508,10 +510,12 @@ export default function DripDrop({ embedded }: { embedded?: boolean } = {}) {
               <Lock size={14} />
               <div className="text-[11px] font-black uppercase tracking-[0.26em]">Shiftside Pro</div>
             </div>
-            <div className="relative grid grid-cols-2 gap-2 blur-[1.5px] pointer-events-none mb-4">
+            {/* Locked feature list — plain rows (divider, not per-item mini-cards)
+                inside the paywall card (nested-cards). */}
+            <div className="relative grid grid-cols-2 gap-x-3 gap-y-2.5 blur-[1.5px] pointer-events-none mb-4">
               {['Custom Concentrations', 'Saved Drug Profiles', 'Titration Log', 'Weight-Based Targets'].map((f) => (
-                <div key={f} className="rounded-2xl border border-sky-300/14 bg-slate-950/70 px-3 py-3">
-                  <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-sky-200/70">{f}</div>
+                <div key={f} className="border-l-2 border-sky-300/30 pl-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.18em] text-sky-200/70">
+                  {f}
                 </div>
               ))}
             </div>

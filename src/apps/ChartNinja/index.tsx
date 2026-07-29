@@ -616,6 +616,7 @@ export default function ChartNinja() {
 
   return (
     <div className="h-screen w-screen flex flex-col text-slate-100 overflow-hidden">
+      <div className="relative mx-auto flex h-full w-full max-w-xl flex-col">
       <AppShellHeader
         toolId="notes"
         rightSlot={
@@ -744,6 +745,7 @@ export default function ChartNinja() {
         </div>
       </div>
       </main>
+      </div>
     </div>
   )
 }

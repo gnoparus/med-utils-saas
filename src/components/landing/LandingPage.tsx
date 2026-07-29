@@ -385,6 +385,30 @@ function HeroPreview() {
   )
 }
 
+// Flattened list row used wherever a card previously held a stack of
+// "feature/comparison" items as individually-bordered mini-cards — the outer
+// container stays the card, rows are separated by a divider instead of a
+// second layer of chrome.
+function FeatureList({
+  items,
+  itemClassName = 'text-slate-300',
+  className = '',
+}: {
+  items: string[]
+  itemClassName?: string
+  className?: string
+}) {
+  return (
+    <div className={`divide-y divide-white/8 border-t border-white/8 ${className}`}>
+      {items.map((item) => (
+        <div key={item} className={`py-3 text-sm ${itemClassName}`}>
+          {item}
+        </div>
+      ))}
+    </div>
+  )
+}
+
 function ComparisonPanel({
   title,
   items,
@@ -405,13 +429,7 @@ function ComparisonPanel({
         <h3 className="text-xl font-semibold text-white">{title}</h3>
       </div>
 
-      <div className="mt-5 grid gap-3">
-        {items.map((item) => (
-          <div key={item} className="rounded-[1.2rem] border border-white/8 bg-slate-950/55 px-4 py-3 text-sm text-slate-300">
-            {item}
-          </div>
-        ))}
-      </div>
+      <FeatureList items={items} className="mt-5" />
     </div>
   )
 }
@@ -564,7 +582,7 @@ export default function LandingPage() {
               title="What Shiftside helps you do in seconds"
             />
 
-            <div className="mt-8 grid gap-4 md:grid-cols-3">
+            <div className="mt-8 grid divide-y divide-white/10 md:grid-cols-3 md:divide-y-0 md:divide-x">
               {outcomeCards.map((card, index) => (
                 <motion.div
                   key={card.title}
@@ -572,7 +590,7 @@ export default function LandingPage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, amount: 0.3 }}
                   transition={{ delay: index * 0.06, duration: 0.35 }}
-                  className="rounded-[1.8rem] border border-white/10 bg-slate-950/60 p-5"
+                  className="py-5 first:pt-0 md:px-6 md:py-0 md:first:pl-0 md:last:pr-0"
                 >
                   <h3 className="text-lg font-semibold text-white">{card.title}</h3>
                   <p className="mt-3 text-sm leading-7 text-slate-300">{card.body}</p>
@@ -689,9 +707,9 @@ export default function LandingPage() {
                     </div>
                     <div className="mt-4 text-2xl font-semibold text-white">{workflow.previewValue}</div>
                     <div className="mt-2 text-sm text-slate-400">{workflow.previewMeta}</div>
-                    <div className="mt-5 grid grid-cols-2 gap-2">
+                    <div className="mt-5 grid grid-cols-2 gap-x-4 gap-y-2">
                       {['Readable output', 'Thumb input', 'Shift-ready', 'Copy-ready'].map((chip) => (
-                        <div key={chip} className="rounded-[1rem] border border-white/8 bg-white/[0.03] px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+                        <div key={chip} className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
                           {chip}
                         </div>
                       ))}
@@ -735,7 +753,7 @@ export default function LandingPage() {
                   </div>
                 </div>
 
-                <div className="mt-5 grid gap-3">
+                <div className="mt-5 divide-y divide-white/8 border-t border-white/8">
                   {[
                     {
                       label: 'WELLS',
@@ -753,7 +771,7 @@ export default function LandingPage() {
                       text: 'GCS total 11 with component scores documented and ready for charting.',
                     },
                   ].map((item) => (
-                    <div key={item.label} className="rounded-[1.25rem] border border-white/8 bg-white/[0.03] p-4">
+                    <div key={item.label} className="py-4">
                       <div className="flex items-center justify-between gap-4">
                         <div className="text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-500">{item.label}</div>
                         <div className="text-sm font-semibold text-white">{item.result}</div>
@@ -763,7 +781,7 @@ export default function LandingPage() {
                   ))}
                 </div>
 
-                <div className="mt-4 flex items-center justify-between rounded-[1.25rem] border border-white/8 bg-white/[0.03] px-4 py-3">
+                <div className="mt-4 flex items-center justify-between border-t border-white/8 pt-3">
                   <div className="flex items-center gap-2 text-sm font-semibold text-slate-200">
                     <Copy className="h-4 w-4 text-emerald-300" />
                     Copy for chart
@@ -796,19 +814,17 @@ export default function LandingPage() {
                   Open now
                 </div>
               </div>
-              <div className="mt-6 grid gap-3">
-                {[
+              <FeatureList
+                items={[
                   'Drips: standard concentrations',
                   'Neuro: GCS only',
                   'ABG: basic interpretation',
                   'Installable PWA',
                   'Offline. No login. No patient data.',
-                ].map((item) => (
-                  <div key={item} className="rounded-[1.2rem] border border-white/8 bg-slate-950/60 px-4 py-3 text-sm text-slate-200">
-                    {item}
-                  </div>
-                ))}
-              </div>
+                ]}
+                itemClassName="text-slate-200"
+                className="mt-6"
+              />
               <div className="mt-6">
                 <PrimaryButton
                   to="/dripdrop"
@@ -832,8 +848,8 @@ export default function LandingPage() {
                   Full toolkit
                 </div>
               </div>
-              <div className="relative mt-6 grid gap-3">
-                {[
+              <FeatureList
+                items={[
                   'Full Drips — custom concentrations',
                   'Full NeoDose — all weight-based modes',
                   'Full ABG — advanced acid-base modes',
@@ -841,12 +857,10 @@ export default function LandingPage() {
                   'NIHSS and advanced neuro scales',
                   'Notes and chart-ready copy tools',
                   'Every future bedside tool',
-                ].map((item) => (
-                  <div key={item} className="rounded-[1.2rem] border border-white/8 bg-slate-950/60 px-4 py-3 text-sm text-slate-100">
-                    {item}
-                  </div>
-                ))}
-              </div>
+                ]}
+                itemClassName="text-slate-100"
+                className="relative mt-6"
+              />
               <div className="relative mt-6 flex flex-col gap-3 sm:flex-row">
                 <a
                   href={STRIPE_MONTHLY_URL}
