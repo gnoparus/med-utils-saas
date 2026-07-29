@@ -43,7 +43,7 @@ export function Numpad({ onKeyPress, onBackspace, onNext, nextLabel = "Next Fiel
             whileTap={disabled ? undefined : { scale: 0.9 }}
             onClick={() => !disabled && handleKey(k)}
             disabled={disabled}
-            className={`glass aspect-video rounded-2xl flex items-center justify-center text-2xl font-bold border select-none touch-manipulation ${
+            className={`glass h-12 rounded-2xl flex items-center justify-center text-2xl font-bold border select-none touch-manipulation ${
               disabled
                 ? 'opacity-20 border-white/5 bg-slate-800/30'
                 : 'bg-white/5 border-white/10 active:bg-white/20'
@@ -56,14 +56,14 @@ export function Numpad({ onKeyPress, onBackspace, onNext, nextLabel = "Next Fiel
       <motion.button
         whileTap={{ scale: 0.9 }}
         onClick={handleBack}
-        className="glass aspect-video rounded-2xl flex items-center justify-center bg-red-500/10 border border-red-500/30 text-red-400 active:bg-red-500/20 select-none touch-manipulation"
+        className="glass h-12 rounded-2xl flex items-center justify-center bg-red-500/10 border border-red-500/30 text-red-400 active:bg-red-500/20 select-none touch-manipulation"
       >
         <Delete />
       </motion.button>
       <motion.button
         whileTap={{ scale: 0.9 }}
         onClick={handleNext}
-        className={`col-span-3 glass py-4 rounded-full flex items-center justify-center border font-bold select-none mt-2 touch-manipulation ${accentClassName ?? ''}`}
+        className={`col-span-3 glass h-12 rounded-full flex items-center justify-center border font-bold select-none mt-2 touch-manipulation ${accentClassName ?? ''}`}
         style={accentStyle}
       >
         {nextLabel}

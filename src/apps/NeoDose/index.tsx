@@ -502,7 +502,7 @@ export default function NeoDose({ embedded }: { embedded?: boolean } = {}) {
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
             className="shrink-0 overflow-hidden bg-slate-900/95 border-b border-white/5"
           >
-            <div className="p-4">
+            <div className="max-h-[60vh] overflow-y-auto p-4">
               <div className="mb-3 rounded-2xl border border-white/8 bg-slate-950/80 px-4 py-3 text-center">
                 <div className="text-[10px] font-bold uppercase tracking-[0.28em] text-slate-500">
                   Manual Weight Entry

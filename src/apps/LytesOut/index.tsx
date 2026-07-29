@@ -626,7 +626,7 @@ export default function LytesOut() {
                 transition={{ type: 'spring', stiffness: 240, damping: 26 }}
                 className="overflow-hidden"
               >
-                <div className="pt-3">
+                <div className="max-h-[60vh] overflow-y-auto pt-3">
                   {/* Current raw value display */}
                   <div
                     className="mb-3 rounded-2xl border border-white/8 bg-slate-950/80 px-4 py-3 text-center"

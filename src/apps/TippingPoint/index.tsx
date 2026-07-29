@@ -777,7 +777,7 @@ export default function TippingPoint({ embedded }: { embedded?: boolean } = {}) 
                 transition={{ type: 'spring', stiffness: 240, damping: 24 }}
                 className="overflow-hidden"
               >
-                <div className="pt-3">
+                <div className="max-h-[60vh] overflow-y-auto pt-3">
                   <Numpad
                     onKeyPress={handleKeyPress}
                     onBackspace={handleBackspace}
