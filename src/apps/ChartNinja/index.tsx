@@ -42,6 +42,12 @@ function loadDraft(): ChartNinjaDraft {
   }
 }
 
+// A template key with an empty object (post-Reset, post-copy) isn't a draft —
+// only an actual filled field counts.
+function hasAnyFieldValue(fieldValues: Record<string, Record<string, string | string[]>>): boolean {
+  return Object.values(fieldValues).some((template) => Object.keys(template).length > 0)
+}
+
 const GLOW = {
   sky:    { accent: '#38bdf8', rgb: '56,189,248',   panel: 'rgba(56,189,248,0.12)',   border: 'rgba(56,189,248,0.28)'   },
   purple: { accent: '#a78bfa', rgb: '167,139,250',  panel: 'rgba(167,139,250,0.12)', border: 'rgba(167,139,250,0.28)'  },
@@ -507,7 +513,7 @@ export default function ChartNinja() {
   const paywallRef = useRef<HTMLDivElement>(null)
   // A restored draft already had its "first result" moment in the session that
   // created it — don't recount it as a fresh completion on this mount.
-  const firstResultFired = useRef(Object.keys(loadDraft().fieldValues ?? {}).length > 0)
+  const firstResultFired = useRef(hasAnyFieldValue(loadDraft().fieldValues ?? {}))
 
   useEffect(() => { trackToolOpened('notes') }, [])
 
@@ -523,7 +529,7 @@ export default function ChartNinja() {
   }, [selectedTemplate.id, fieldValues])
 
   useEffect(() => {
-    if (!firstResultFired.current && Object.keys(fieldValues).length > 0) {
+    if (!firstResultFired.current && hasAnyFieldValue(fieldValues)) {
       firstResultFired.current = true
       trackFirstResultCompleted('notes')
     }

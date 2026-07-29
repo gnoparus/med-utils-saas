@@ -78,4 +78,23 @@ describe("ChartNinja draft persistence", () => {
 
     expect(gtag).not.toHaveBeenCalledWith("event", "first_result_completed", expect.anything());
   });
+
+  it("does not treat an empty post-copy/reset template entry as a restored draft", () => {
+    // Shape left behind by handleNoteCopied / handleReset: a template key
+    // with no field values — this is NOT a draft and must not suppress the
+    // next real completion's analytics event.
+    localStorage.setItem(DRAFT_KEY, JSON.stringify({ templateId: "admission", fieldValues: { admission: {} } }));
+    const gtag = vi.fn();
+    globalThis.window.gtag = gtag;
+
+    render(
+      <MemoryRouter initialEntries={["/chartninja"]}>
+        <ChartNinja />
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /Chest Pain/i }));
+
+    expect(gtag).toHaveBeenCalledWith("event", "first_result_completed", { tool_id: "notes" });
+  });
 });
