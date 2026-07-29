@@ -39,6 +39,11 @@ const DRUG_DOSE_PRESETS: Record<string, number[]> = {
 }
 
 // ─── Per-drug style map (inline styles — avoids dynamic Tailwind class names) ─
+//
+// ponytail: every drug shares drips-sky (DESIGN.md One Signal Rule) — the map
+// keys (amber/red/violet/sky/emerald) are kept because they're also the drug
+// identity keys read elsewhere (IVBagAnimation's BAG_COLORS, SVG clipPath id).
+// Differentiation between drugs is container alpha only, never hue.
 
 interface DrugStyle {
   accent: string
@@ -48,47 +53,26 @@ interface DrugStyle {
   bgGradient: string
 }
 
+const SKY_ACCENT = '#7DD3FC'
+const SKY_RGB = '125,211,252'
+
+function skyTint(panelAlpha: number): DrugStyle {
+  return {
+    accent: SKY_ACCENT,
+    rgb: SKY_RGB,
+    panel: `rgba(${SKY_RGB},${panelAlpha})`,
+    border: `rgba(${SKY_RGB},${(panelAlpha + 0.16).toFixed(2)})`,
+    bgGradient:
+      `radial-gradient(circle at 14% 10%, rgba(${SKY_RGB},${(panelAlpha + 0.01).toFixed(2)}), transparent 38%), radial-gradient(circle at 82% 88%, rgba(${SKY_RGB},${Math.max(panelAlpha - 0.04, 0.02).toFixed(2)}), transparent 38%)`,
+  }
+}
+
 const DRUG_STYLES: Record<string, DrugStyle> = {
-  amber: {
-    accent: '#f59e0b',
-    rgb: '245,158,11',
-    panel: 'rgba(245,158,11,0.12)',
-    border: 'rgba(245,158,11,0.28)',
-    bgGradient:
-      'radial-gradient(circle at 14% 10%, rgba(245,158,11,0.13), transparent 38%), radial-gradient(circle at 82% 88%, rgba(245,158,11,0.08), transparent 38%)',
-  },
-  red: {
-    accent: '#ef4444',
-    rgb: '239,68,68',
-    panel: 'rgba(239,68,68,0.12)',
-    border: 'rgba(239,68,68,0.28)',
-    bgGradient:
-      'radial-gradient(circle at 14% 10%, rgba(239,68,68,0.13), transparent 38%), radial-gradient(circle at 82% 88%, rgba(239,68,68,0.08), transparent 38%)',
-  },
-  violet: {
-    accent: '#8b5cf6',
-    rgb: '139,92,246',
-    panel: 'rgba(139,92,246,0.12)',
-    border: 'rgba(139,92,246,0.28)',
-    bgGradient:
-      'radial-gradient(circle at 14% 10%, rgba(139,92,246,0.13), transparent 38%), radial-gradient(circle at 82% 88%, rgba(139,92,246,0.08), transparent 38%)',
-  },
-  sky: {
-    accent: '#38bdf8',
-    rgb: '56,189,248',
-    panel: 'rgba(56,189,248,0.12)',
-    border: 'rgba(56,189,248,0.28)',
-    bgGradient:
-      'radial-gradient(circle at 14% 10%, rgba(56,189,248,0.13), transparent 38%), radial-gradient(circle at 82% 88%, rgba(56,189,248,0.08), transparent 38%)',
-  },
-  emerald: {
-    accent: '#10b981',
-    rgb: '16,185,129',
-    panel: 'rgba(16,185,129,0.12)',
-    border: 'rgba(16,185,129,0.28)',
-    bgGradient:
-      'radial-gradient(circle at 14% 10%, rgba(16,185,129,0.13), transparent 38%), radial-gradient(circle at 82% 88%, rgba(16,185,129,0.08), transparent 38%)',
-  },
+  amber: skyTint(0.09),
+  red: skyTint(0.12),
+  violet: skyTint(0.15),
+  sky: skyTint(0.18),
+  emerald: skyTint(0.21),
 }
 
 // ─── DrugSelector ─────────────────────────────────────────────────────────────
@@ -117,7 +101,7 @@ function DrugSelector({
             style={
               isActive
                 ? { background: s.panel, borderColor: s.border, color: s.accent, boxShadow: `0 0 16px rgba(${s.rgb},0.2)` }
-                : { background: 'rgba(15,23,42,0.6)', borderColor: 'rgba(255,255,255,0.08)', color: '#475569' }
+                : { background: 'rgba(15,23,42,0.6)', borderColor: 'rgba(255,255,255,0.08)', color: '#94A3B8' }
             }
           >
             {d.shortName}
@@ -157,7 +141,7 @@ function WeightStepper({
             style={
               weight === w
                 ? { background: s.panel, borderColor: s.border, color: s.accent }
-                : { background: 'rgba(15,23,42,0.6)', borderColor: 'rgba(255,255,255,0.08)', color: '#475569' }
+                : { background: 'rgba(15,23,42,0.6)', borderColor: 'rgba(255,255,255,0.08)', color: '#94A3B8' }
             }
           >
             {w}
@@ -216,7 +200,7 @@ function DoseQuickPicks({
             style={
               isActive
                 ? { background: s.panel, borderColor: s.border, color: s.accent, boxShadow: `0 0 10px rgba(${s.rgb},0.22)` }
-                : { background: 'rgba(15,23,42,0.6)', borderColor: 'rgba(255,255,255,0.08)', color: '#475569' }
+                : { background: 'rgba(15,23,42,0.6)', borderColor: 'rgba(255,255,255,0.08)', color: '#94A3B8' }
             }
           >
             {p < 0.1 ? p.toFixed(3) : p < 1 ? p.toFixed(2) : p.toFixed(0)}
@@ -373,7 +357,7 @@ export default function DripDrop({ embedded }: { embedded?: boolean } = {}) {
                       {effectLabel}
                     </motion.div>
                   </AnimatePresence>
-                  <p className="text-[10px] text-slate-600 max-w-[150px] text-right leading-tight">
+                  <p className="text-[10px] text-slate-400 max-w-[150px] text-right leading-tight">
                     {activeDrug.clinicalNote}
                   </p>
                 </div>
@@ -398,7 +382,7 @@ export default function DripDrop({ embedded }: { embedded?: boolean } = {}) {
                 min={activeDrug.doseRange.min}
                 max={activeDrug.doseRange.max}
                 step={activeDrug.dialStep}
-                glowRgb={activeDrug.glowRgb}
+                glowRgb={SKY_RGB}
                 unit={activeDrug.unit}
                 onChange={setDose}
               />
@@ -427,7 +411,7 @@ export default function DripDrop({ embedded }: { embedded?: boolean } = {}) {
                 mlPerHr={calc.mlPerHr}
                 dropsPerSec={calc.dropsPerSec}
                 color={activeDrug.color}
-                glowRgb={activeDrug.glowRgb}
+                glowRgb={SKY_RGB}
                 isActive={dose > activeDrug.doseRange.min || calc.mlPerHr > 0.1}
               />
             </div>
@@ -466,12 +450,12 @@ export default function DripDrop({ embedded }: { embedded?: boolean } = {}) {
                       : dose < 1 ? dose.toFixed(2) : dose.toFixed(1)}
                   </motion.div>
                 </AnimatePresence>
-                <div className="text-[9px] text-slate-600 mt-0.5 leading-tight">{activeDrug.unit}</div>
+                <div className="text-[9px] text-slate-400 mt-0.5 leading-tight">{activeDrug.unit}</div>
               </div>
               <div className="rounded-2xl border border-white/8 bg-slate-950/70 p-3">
                 <div className="text-[10px] font-black uppercase tracking-[0.22em] text-slate-500">Weight</div>
                 <div className="text-lg font-black text-white mt-1 tabular-nums">{weightKg}</div>
-                <div className="text-[9px] text-slate-600 mt-0.5">kg</div>
+                <div className="text-[9px] text-slate-400 mt-0.5">kg</div>
               </div>
               <div className="rounded-2xl p-3" style={{ background: s.panel, border: `1px solid ${s.border}` }}>
                 <div className="text-[10px] font-black uppercase tracking-[0.22em] text-slate-500">Rate</div>
@@ -486,7 +470,7 @@ export default function DripDrop({ embedded }: { embedded?: boolean } = {}) {
                     {calc.mlPerHr.toFixed(1)}
                   </motion.div>
                 </AnimatePresence>
-                <div className="text-[9px] text-slate-600 mt-0.5">mL/hr</div>
+                <div className="text-[9px] text-slate-400 mt-0.5">mL/hr</div>
               </div>
             </div>
             <div
@@ -507,10 +491,10 @@ export default function DripDrop({ embedded }: { embedded?: boolean } = {}) {
             onClick={handleCopy}
             className="mt-4 w-full flex items-center justify-center gap-2 rounded-[1.8rem] border px-5 py-4 text-base font-black"
             style={{
-              background: 'linear-gradient(135deg, rgba(16,185,129,0.28), rgba(52,211,153,0.18))',
-              borderColor: 'rgba(16,185,129,0.38)',
-              color: '#6ee7b7',
-              boxShadow: '0 0 30px rgba(16,185,129,0.18)',
+              background: 'linear-gradient(135deg, rgba(125,211,252,0.28), rgba(125,211,252,0.16))',
+              borderColor: 'rgba(125,211,252,0.4)',
+              color: '#7dd3fc',
+              boxShadow: '0 0 30px rgba(125,211,252,0.18)',
             }}
           >
             {copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}

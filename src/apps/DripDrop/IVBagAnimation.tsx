@@ -13,12 +13,23 @@ interface DropItem {
   id: number
 }
 
+// ponytail: keys are drug-identity ids (kept for parity with DRUG_STYLES /
+// clipPath id below); values all share drips-sky (One Signal Rule) — only
+// fill alpha varies per drug so the bag still reads distinctly.
+function skyBag(fillAlpha: number) {
+  return {
+    fill: `rgba(125,211,252,${fillAlpha})`,
+    stroke: 'rgba(125,211,252,0.55)',
+    tube: 'rgba(125,211,252,0.45)',
+  }
+}
+
 const BAG_COLORS: Record<string, { fill: string; stroke: string; tube: string }> = {
-  amber:   { fill: 'rgba(245,158,11,0.22)', stroke: 'rgba(245,158,11,0.55)', tube: 'rgba(245,158,11,0.45)' },
-  red:     { fill: 'rgba(239,68,68,0.22)',  stroke: 'rgba(239,68,68,0.55)',  tube: 'rgba(239,68,68,0.45)' },
-  violet:  { fill: 'rgba(139,92,246,0.22)', stroke: 'rgba(139,92,246,0.55)', tube: 'rgba(139,92,246,0.45)' },
-  sky:     { fill: 'rgba(56,189,248,0.22)', stroke: 'rgba(56,189,248,0.55)', tube: 'rgba(56,189,248,0.45)' },
-  emerald: { fill: 'rgba(16,185,129,0.22)', stroke: 'rgba(16,185,129,0.55)', tube: 'rgba(16,185,129,0.45)' },
+  amber: skyBag(0.16),
+  red: skyBag(0.19),
+  violet: skyBag(0.22),
+  sky: skyBag(0.25),
+  emerald: skyBag(0.28),
 }
 
 export function IVBagAnimation({ mlPerHr, dropsPerSec, color, glowRgb, isActive }: IVBagProps) {

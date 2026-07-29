@@ -33,6 +33,22 @@ const GLOW = {
 
 type GlowKey = keyof typeof GLOW
 
+// ponytail: GCS/NIHSS category "identity" colors used to come from the lib's
+// per-category rainbow (cat.accent/accentBg/accentBorder) — that's row
+// decoration, not severity, so we ignore those lib fields here and tint every
+// category with neuro-green instead, varying only container alpha by index.
+const NEURO_ACCENT = '#86EFAC'
+const NEURO_RGB = '134,239,172'
+
+function neuroTint(index: number) {
+  const alpha = 0.10 + (index % 4) * 0.05
+  return {
+    accent: NEURO_ACCENT,
+    accentBg: `rgba(${NEURO_RGB},${alpha.toFixed(2)})`,
+    accentBorder: `rgba(${NEURO_RGB},${(alpha + 0.16).toFixed(2)})`,
+  }
+}
+
 // ─── Score Hero ───────────────────────────────────────────────────────────────
 
 function ScoreHero({
@@ -94,7 +110,7 @@ function ScoreHero({
           >
             {displayed}
           </motion.span>
-          <span className="mb-2 text-xl font-black text-slate-600">/{maxScore}</span>
+          <span className="mb-2 text-xl font-black text-slate-400">/{maxScore}</span>
         </div>
 
         {/* Severity + sub */}
@@ -164,7 +180,6 @@ function GcsRadarChart({
   const maxes = [4, 5, 6]
   const values = [eyes, verbal, motor]
   const labels = ['E', 'V', 'M']
-  const cats = GCS_CATEGORIES
 
   function axisPoint(i: number, radius: number) {
     return {
@@ -234,7 +249,6 @@ function GcsRadarChart({
       {/* Axis labels + scores */}
       {[0, 1, 2].map(i => {
         const lp = axisPoint(i, R + 16)
-        const cat = cats[i]
         return (
           <g key={i}>
             <text
@@ -244,7 +258,7 @@ function GcsRadarChart({
               dominantBaseline="middle"
               fontSize="11"
               fontWeight="900"
-              fill={cat.accent}
+              fill={neuroTint(i).accent}
             >
               {labels[i]}{values[i]}
             </text>
@@ -269,6 +283,7 @@ function GcsCategoryCard({
   index: number
 }) {
   const [expanded, setExpanded] = useState(true)
+  const t = neuroTint(index)
 
   return (
     <motion.div
@@ -276,7 +291,7 @@ function GcsCategoryCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.07, type: 'spring', stiffness: 260, damping: 24 }}
       className="relative overflow-hidden rounded-3xl border"
-      style={{ background: 'rgba(2,6,23,0.72)', borderColor: expanded ? cat.accentBorder : 'rgba(255,255,255,0.08)' }}
+      style={{ background: 'rgba(2,6,23,0.72)', borderColor: expanded ? t.accentBorder : 'rgba(255,255,255,0.08)' }}
     >
       {/* Category header */}
       <button
@@ -287,7 +302,7 @@ function GcsCategoryCard({
           {/* Abbrev badge */}
           <div
             className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl text-sm font-black"
-            style={{ background: cat.accentBg, color: cat.accent }}
+            style={{ background: t.accentBg, color: t.accent }}
           >
             {cat.abbrev}
           </div>
@@ -302,7 +317,7 @@ function GcsCategoryCard({
           {/* Selected score chip */}
           <div
             className="rounded-xl px-3 py-1.5 text-sm font-black tabular-nums"
-            style={{ background: cat.accentBg, color: cat.accent, border: `1px solid ${cat.accentBorder}` }}
+            style={{ background: t.accentBg, color: t.accent, border: `1px solid ${t.accentBorder}` }}
           >
             {selected}/{cat.maxScore}
           </div>
@@ -334,15 +349,15 @@ function GcsCategoryCard({
                     onClick={() => { onSelect(item.score); triggerHaptic(isSelected ? 6 : [10, 8]) }}
                     className="flex items-center gap-3 rounded-2xl border px-4 py-3 text-left transition-all duration-200"
                     style={{
-                      background: isSelected ? cat.accentBg : 'rgba(255,255,255,0.03)',
-                      borderColor: isSelected ? cat.accentBorder : 'rgba(255,255,255,0.07)',
+                      background: isSelected ? t.accentBg : 'rgba(255,255,255,0.03)',
+                      borderColor: isSelected ? t.accentBorder : 'rgba(255,255,255,0.07)',
                     }}
                   >
                     {/* Score badge */}
                     <div
                       className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-xs font-black tabular-nums"
                       style={{
-                        background: isSelected ? cat.accent : 'rgba(255,255,255,0.06)',
+                        background: isSelected ? t.accent : 'rgba(255,255,255,0.06)',
                         color: isSelected ? '#020617' : 'rgba(255,255,255,0.35)',
                       }}
                     >
@@ -351,7 +366,7 @@ function GcsCategoryCard({
                     <div className="min-w-0 flex-1">
                       <div
                         className="text-sm font-bold leading-tight"
-                        style={{ color: isSelected ? cat.accent : 'rgba(255,255,255,0.75)' }}
+                        style={{ color: isSelected ? t.accent : 'rgba(255,255,255,0.75)' }}
                       >
                         {item.label}
                       </div>
@@ -368,7 +383,7 @@ function GcsCategoryCard({
                           exit={{ scale: 0, opacity: 0 }}
                           transition={{ type: 'spring', stiffness: 400, damping: 18 }}
                           className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full"
-                          style={{ background: cat.accent }}
+                          style={{ background: t.accent }}
                         >
                           <Check size={13} color="#020617" strokeWidth={3} />
                         </motion.div>
@@ -400,6 +415,7 @@ function NihssCategoryCard({
 }) {
   const [expanded, setExpanded] = useState(false)
   const hasDeficit = selected > 0
+  const t = neuroTint(index)
 
   return (
     <motion.div
@@ -407,7 +423,7 @@ function NihssCategoryCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.04, type: 'spring', stiffness: 280, damping: 26 }}
       className="relative overflow-hidden rounded-3xl border"
-      style={{ background: 'rgba(2,6,23,0.72)', borderColor: hasDeficit ? cat.accentBorder : 'rgba(255,255,255,0.08)' }}
+      style={{ background: 'rgba(2,6,23,0.72)', borderColor: hasDeficit ? t.accentBorder : 'rgba(255,255,255,0.08)' }}
     >
       <button
         className="flex w-full items-center justify-between px-5 py-3.5"
@@ -416,7 +432,7 @@ function NihssCategoryCard({
         <div className="flex items-center gap-3">
           <div
             className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-xs font-black"
-            style={{ background: cat.accentBg, color: cat.accent }}
+            style={{ background: t.accentBg, color: t.accent }}
           >
             {selected}
           </div>
@@ -426,7 +442,7 @@ function NihssCategoryCard({
           {hasDeficit && (
             <div
               className="h-2 w-2 rounded-full"
-              style={{ background: cat.accent, boxShadow: `0 0 6px ${cat.accent}` }}
+              style={{ background: t.accent, boxShadow: `0 0 6px ${t.accent}` }}
             />
           )}
           {expanded ? <ChevronUp size={14} className="text-slate-500" /> : <ChevronDown size={14} className="text-slate-500" />}
@@ -452,14 +468,14 @@ function NihssCategoryCard({
                     onClick={() => { onSelect(cat.id, item.score); triggerHaptic(10) }}
                     className="flex items-center gap-3 rounded-2xl border px-4 py-2.5 text-left transition-all duration-200"
                     style={{
-                      background: isSelected ? cat.accentBg : 'rgba(255,255,255,0.02)',
-                      borderColor: isSelected ? cat.accentBorder : 'rgba(255,255,255,0.06)',
+                      background: isSelected ? t.accentBg : 'rgba(255,255,255,0.02)',
+                      borderColor: isSelected ? t.accentBorder : 'rgba(255,255,255,0.06)',
                     }}
                   >
                     <div
                       className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl text-xs font-black tabular-nums"
                       style={{
-                        background: isSelected ? cat.accent : 'rgba(255,255,255,0.06)',
+                        background: isSelected ? t.accent : 'rgba(255,255,255,0.06)',
                         color: isSelected ? '#020617' : 'rgba(255,255,255,0.3)',
                       }}
                     >
@@ -468,7 +484,7 @@ function NihssCategoryCard({
                     <div className="min-w-0 flex-1">
                       <div
                         className="text-xs font-bold"
-                        style={{ color: isSelected ? cat.accent : 'rgba(255,255,255,0.7)' }}
+                        style={{ color: isSelected ? t.accent : 'rgba(255,255,255,0.7)' }}
                       >
                         {item.label}
                       </div>
@@ -481,7 +497,7 @@ function NihssCategoryCard({
                           animate={{ scale: 1 }}
                           exit={{ scale: 0 }}
                           className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full"
-                          style={{ background: cat.accent }}
+                          style={{ background: t.accent }}
                         >
                           <Check size={11} color="#020617" strokeWidth={3} />
                         </motion.div>
@@ -562,10 +578,10 @@ function CopyButton({ text, label = 'Copy for Chart' }: { text: string; label?: 
       className="flex w-full items-center justify-center gap-2.5 rounded-[1.8rem] border px-5 py-4 text-base font-black transition-all"
       style={{
         background: copied
-          ? 'linear-gradient(135deg, rgba(16,185,129,0.32), rgba(52,211,153,0.2))'
-          : 'linear-gradient(135deg, rgba(167,139,250,0.22), rgba(139,92,246,0.14))',
-        borderColor: copied ? 'rgba(16,185,129,0.4)' : 'rgba(167,139,250,0.35)',
-        color: copied ? '#10b981' : '#a78bfa',
+          ? 'linear-gradient(135deg, rgba(134,239,172,0.34), rgba(134,239,172,0.2))'
+          : 'linear-gradient(135deg, rgba(134,239,172,0.18), rgba(134,239,172,0.1))',
+        borderColor: copied ? 'rgba(134,239,172,0.45)' : 'rgba(134,239,172,0.3)',
+        color: '#86efac',
       }}
     >
       <AnimatePresence mode="wait">
@@ -636,23 +652,26 @@ function GcsTab() {
           glowKey={analysis.glowState}
         />
         <div className="flex flex-col gap-3 flex-1">
-          {GCS_CATEGORIES.map(cat => (
-            <div key={cat.id} className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div
-                  className="h-2 w-2 rounded-full"
-                  style={{ background: cat.accent, boxShadow: `0 0 5px ${cat.accent}` }}
-                />
-                <span className="text-xs font-bold text-slate-400">{cat.label}</span>
+          {GCS_CATEGORIES.map((cat, i) => {
+            const t = neuroTint(i)
+            return (
+              <div key={cat.id} className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div
+                    className="h-2 w-2 rounded-full"
+                    style={{ background: t.accent, boxShadow: `0 0 5px ${t.accent}` }}
+                  />
+                  <span className="text-xs font-bold text-slate-400">{cat.label}</span>
+                </div>
+                <span
+                  className="text-sm font-black tabular-nums"
+                  style={{ color: t.accent }}
+                >
+                  {scores[cat.id]}/{cat.maxScore}
+                </span>
               </div>
-              <span
-                className="text-sm font-black tabular-nums"
-                style={{ color: cat.accent }}
-              >
-                {scores[cat.id]}/{cat.maxScore}
-              </span>
-            </div>
-          ))}
+            )
+          })}
           <div
             className="mt-1 rounded-xl border px-3 py-2 text-center"
             style={{ borderColor: glow.border, background: glow.panel }}
@@ -754,7 +773,7 @@ function NihssTab() {
               Unlock Shiftside Pro
             </motion.button>
 
-            <p className="mt-3 text-[10px] text-slate-600">Full toolkit unlock</p>
+            <p className="mt-3 text-[10px] text-slate-400">Full toolkit unlock</p>
           </motion.div>
 
           {/* Preview scores below lock (blurred) */}
@@ -839,17 +858,11 @@ export default function NeuroSnap({ embedded }: { embedded?: boolean } = {}) {
           transition={{ duration: 0.5 }}
           className="absolute inset-0 pointer-events-none"
           style={{
-            background:
-              mode === 'gcs'
-                ? `
-                  radial-gradient(circle at 20% 0%, rgba(167,139,250,0.12), transparent 36%),
-                  radial-gradient(circle at 80% 5%, rgba(56,189,248,0.09), transparent 32%),
-                  radial-gradient(circle at 50% 100%, rgba(251,113,133,0.07), transparent 40%)
-                `
-                : `
-                  radial-gradient(circle at 15% 0%, rgba(139,92,246,0.14), transparent 36%),
-                  radial-gradient(circle at 85% 5%, rgba(249,115,22,0.08), transparent 32%)
-                `,
+            background: `
+              radial-gradient(circle at 20% 0%, rgba(134,239,172,0.12), transparent 36%),
+              radial-gradient(circle at 80% 5%, rgba(134,239,172,0.08), transparent 32%),
+              radial-gradient(circle at 50% 100%, rgba(134,239,172,0.06), transparent 40%)
+            `,
           }}
         />
       </AnimatePresence>
@@ -864,8 +877,8 @@ export default function NeuroSnap({ embedded }: { embedded?: boolean } = {}) {
             className="flex rounded-2xl border border-white/8 bg-slate-900/60 p-1"
           >
             {([
-              { id: 'gcs', label: 'GCS', badge: '/15', accent: '#a78bfa', rgb: '167,139,250' },
-              { id: 'nihss', label: 'NIHSS', badge: '/42', accent: '#9333ea', rgb: '147,51,234', locked: true },
+              { id: 'gcs', label: 'GCS', badge: '/15', accent: NEURO_ACCENT, rgb: NEURO_RGB },
+              { id: 'nihss', label: 'NIHSS', badge: '/42', accent: NEURO_ACCENT, rgb: NEURO_RGB, locked: true },
             ] as const).map(tab => {
               const isActive = mode === tab.id
               return (

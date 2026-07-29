@@ -22,6 +22,9 @@ type DetailTab = 'read' | 'compensation' | 'chart'
 
 const FIELD_ORDER: FieldKey[] = ['pH', 'pco2', 'hco3']
 
+const ABG_ORANGE = '#FDBA74'
+const ABG_ORANGE_RGB = '253,186,116'
+
 const FIELD_META: Record<FieldKey, {
   label: string
   unit: string
@@ -41,8 +44,8 @@ const FIELD_META: Record<FieldKey, {
     allowDecimal: true,
     maxLength: 4,
     defaultValue: '7.40',
-    accent: '#f97316',
-    accentBg: 'rgba(249,115,22,0.16)',
+    accent: ABG_ORANGE,
+    accentBg: `rgba(${ABG_ORANGE_RGB},0.14)`,
   },
   pco2: {
     label: 'PaCO2',
@@ -52,8 +55,8 @@ const FIELD_META: Record<FieldKey, {
     allowDecimal: false,
     maxLength: 3,
     defaultValue: '40',
-    accent: '#38bdf8',
-    accentBg: 'rgba(56,189,248,0.16)',
+    accent: ABG_ORANGE,
+    accentBg: `rgba(${ABG_ORANGE_RGB},0.20)`,
   },
   hco3: {
     label: 'HCO3',
@@ -63,8 +66,8 @@ const FIELD_META: Record<FieldKey, {
     allowDecimal: false,
     maxLength: 2,
     defaultValue: '24',
-    accent: '#14b8a6',
-    accentBg: 'rgba(20,184,166,0.16)',
+    accent: ABG_ORANGE,
+    accentBg: `rgba(${ABG_ORANGE_RGB},0.26)`,
   },
 }
 
@@ -412,7 +415,7 @@ function DetailPanel({
       <div className="glass rounded-[1.8rem] border-white/8 p-4">
         <div className="flex items-center gap-2 text-slate-300">
           <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/[0.04] text-slate-100">
-            <Activity size={18} className="text-emerald-300" />
+            <Activity size={18} className="text-orange-300" />
           </div>
           <div className="text-[11px] font-black uppercase tracking-[0.24em] text-slate-500">Interpretation</div>
         </div>
@@ -436,7 +439,7 @@ function DetailPanel({
       <div className="glass rounded-[1.8rem] border-white/8 p-4">
         <div className="flex items-center gap-2 text-slate-300">
           <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/[0.04] text-slate-100">
-            <FlaskConical size={18} className="text-cyan-300" />
+            <FlaskConical size={18} className="text-orange-300" />
           </div>
           <div className="text-[11px] font-black uppercase tracking-[0.24em] text-slate-500">Compensation</div>
         </div>
@@ -484,7 +487,7 @@ function DetailPanel({
     <div className="glass rounded-[1.8rem] border-white/8 p-4">
       <div className="flex items-center gap-2 text-slate-300">
         <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/[0.04] text-slate-100">
-          <Sparkles size={18} className="text-emerald-300" />
+          <Sparkles size={18} className="text-orange-300" />
         </div>
         <div className="text-[11px] font-black uppercase tracking-[0.24em] text-slate-500">Chart Note</div>
       </div>
@@ -496,10 +499,10 @@ function DetailPanel({
         onClick={onCopy}
         className="mt-4 flex w-full items-center justify-center gap-2 rounded-[1.8rem] border px-5 py-4 text-base font-black transition-all active:scale-[0.98]"
         style={{
-          background: 'linear-gradient(135deg, rgba(16,185,129,0.28), rgba(52,211,153,0.18))',
-          borderColor: 'rgba(16,185,129,0.38)',
-          color: '#6ee7b7',
-          boxShadow: '0 0 30px rgba(16,185,129,0.18)',
+          background: 'linear-gradient(135deg, rgba(253,186,116,0.28), rgba(253,186,116,0.16))',
+          borderColor: 'rgba(253,186,116,0.4)',
+          color: '#fdba74',
+          boxShadow: '0 0 30px rgba(253,186,116,0.18)',
         }}
       >
         {copied ? <Check size={20} /> : <Copy size={20} />}
@@ -601,9 +604,9 @@ export default function TippingPoint({ embedded }: { embedded?: boolean } = {}) 
         className="absolute inset-0 pointer-events-none"
         style={{
           background: `
-            radial-gradient(circle at 12% 8%, rgba(251,113,133,0.12), transparent 28%),
-            radial-gradient(circle at 88% 12%, rgba(34,211,238,0.12), transparent 28%),
-            radial-gradient(circle at 50% 100%, rgba(16,185,129,0.12), transparent 40%)
+            radial-gradient(circle at 12% 8%, rgba(253,186,116,0.12), transparent 28%),
+            radial-gradient(circle at 88% 12%, rgba(253,186,116,0.09), transparent 28%),
+            radial-gradient(circle at 50% 100%, rgba(253,186,116,0.10), transparent 40%)
           `,
         }}
       />
@@ -775,6 +778,7 @@ export default function TippingPoint({ embedded }: { embedded?: boolean } = {}) 
                     onBackspace={handleBackspace}
                     onNext={handleNext}
                     nextLabel={`Next · ${FIELD_META[nextField].label}`}
+                    accentClassName="bg-orange-500/10 border-orange-500/30 text-orange-400 active:bg-orange-500/20"
                   />
                 </div>
               </motion.div>
