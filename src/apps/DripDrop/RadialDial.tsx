@@ -1,5 +1,6 @@
 import { useRef, useCallback } from 'react'
 import { motion } from 'framer-motion'
+import { triggerHaptic } from '../../lib/haptics'
 
 interface RadialDialProps {
   value: number       // current dose
@@ -49,7 +50,7 @@ export function RadialDial({ value, min, max, step, glowRgb, unit, onChange }: R
     const clamped = Math.min(max, Math.max(min, Math.round(newVal / step) * step))
     if (clamped !== value) {
       onChange(parseFloat(clamped.toFixed(4)))
-      if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(8)
+      triggerHaptic(8)
     }
   }, [value, min, max, step, onChange])
 

@@ -9,6 +9,7 @@ import {
   generateDripChartNote,
   type PresssorDrug,
 } from '../../lib/dripdrop-calculator'
+import { triggerHaptic } from '../../lib/haptics'
 import { IVBagAnimation } from './IVBagAnimation'
 import { RadialDial } from './RadialDial'
 import { trackToolOpened, trackFirstResultCompleted, trackPaywallViewed, trackCheckoutStarted } from '../../lib/analytics'
@@ -16,9 +17,6 @@ import { STRIPE_MONTHLY_URL } from '../../lib/billing'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function triggerHaptic(pattern: number | number[] = 8) {
-  if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(pattern)
-}
 
 function clamp(val: number, min: number, max: number) {
   return Math.min(max, Math.max(min, val))

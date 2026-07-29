@@ -10,6 +10,7 @@ import {
 } from 'lucide-react'
 import { AppShellHeader } from '../../components/app-shell'
 import { trackToolOpened, trackFirstResultCompleted } from '../../lib/analytics'
+import { triggerHaptic } from '../../lib/haptics'
 import {
   GCS_CATEGORIES,
   NIHSS_CATEGORIES,
@@ -21,9 +22,6 @@ import {
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-function triggerHaptic(pattern: number | number[] = 10) {
-  if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(pattern)
-}
 
 const GLOW = {
   green: { accent: '#10b981', rgb: '16,185,129', panel: 'rgba(16,185,129,0.12)', border: 'rgba(16,185,129,0.28)' },

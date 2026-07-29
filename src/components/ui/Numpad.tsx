@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { Delete } from 'lucide-react'
+import { triggerHaptic } from '../../lib/haptics'
 
 interface NumpadProps {
   onKeyPress: (key: string) => void
@@ -7,28 +8,26 @@ interface NumpadProps {
   onNext: () => void
   nextLabel?: string
   /** Caller's tool accent classes for the primary "next" button, e.g. "bg-orange-500/10 border-orange-500/30 text-orange-400 active:bg-orange-500/20" */
-  accentClassName: string
+  accentClassName?: string
+  /** Alternative to accentClassName for tools whose accent is a runtime value (e.g. NeoDose's Broselow band color) rather than a static Tailwind class. */
+  accentStyle?: { background: string; borderColor: string; color: string }
+  /** Keys to render disabled, e.g. ['.'] when the active field doesn't allow decimals. */
+  disabledKeys?: string[]
 }
 
-export function Numpad({ onKeyPress, onBackspace, onNext, nextLabel = "Next Field", accentClassName }: NumpadProps) {
-  const triggerHaptic = () => {
-    if (typeof navigator !== 'undefined' && navigator.vibrate) {
-      navigator.vibrate(10)
-    }
-  }
-
+export function Numpad({ onKeyPress, onBackspace, onNext, nextLabel = "Next Field", accentClassName, accentStyle, disabledKeys = [] }: NumpadProps) {
   const handleKey = (k: string) => {
-    triggerHaptic()
+    triggerHaptic(10)
     onKeyPress(k)
   }
 
   const handleBack = () => {
-    triggerHaptic()
+    triggerHaptic(10)
     onBackspace()
   }
 
   const handleNext = () => {
-    triggerHaptic()
+    triggerHaptic(10)
     onNext()
   }
 
@@ -36,16 +35,24 @@ export function Numpad({ onKeyPress, onBackspace, onNext, nextLabel = "Next Fiel
 
   return (
     <div className="grid grid-cols-3 gap-2 w-full max-w-sm mx-auto">
-      {keys.map(k => (
-        <motion.button
-          key={k}
-          whileTap={{ scale: 0.9 }}
-          onClick={() => handleKey(k)}
-          className="glass aspect-video rounded-2xl flex items-center justify-center text-2xl font-bold bg-white/5 border border-white/10 active:bg-white/20 select-none touch-manipulation"
-        >
-          {k}
-        </motion.button>
-      ))}
+      {keys.map(k => {
+        const disabled = disabledKeys.includes(k)
+        return (
+          <motion.button
+            key={k}
+            whileTap={disabled ? undefined : { scale: 0.9 }}
+            onClick={() => !disabled && handleKey(k)}
+            disabled={disabled}
+            className={`glass aspect-video rounded-2xl flex items-center justify-center text-2xl font-bold border select-none touch-manipulation ${
+              disabled
+                ? 'opacity-20 border-white/5 bg-slate-800/30'
+                : 'bg-white/5 border-white/10 active:bg-white/20'
+            }`}
+          >
+            {k}
+          </motion.button>
+        )
+      })}
       <motion.button
         whileTap={{ scale: 0.9 }}
         onClick={handleBack}
@@ -56,7 +63,8 @@ export function Numpad({ onKeyPress, onBackspace, onNext, nextLabel = "Next Fiel
       <motion.button
         whileTap={{ scale: 0.9 }}
         onClick={handleNext}
-        className={`col-span-3 glass py-4 rounded-full flex items-center justify-center border font-bold select-none mt-2 touch-manipulation ${accentClassName}`}
+        className={`col-span-3 glass py-4 rounded-full flex items-center justify-center border font-bold select-none mt-2 touch-manipulation ${accentClassName ?? ''}`}
+        style={accentStyle}
       >
         {nextLabel}
       </motion.button>

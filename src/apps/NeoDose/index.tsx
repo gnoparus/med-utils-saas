@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useEffect, useRef } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import {
   motion,
   AnimatePresence,
@@ -16,7 +16,10 @@ import {
   Lock,
 } from "lucide-react";
 import { AppShellHeader } from "../../components/app-shell";
+import { Numpad } from "../../components/ui/Numpad";
+import { HapticSlider } from "../../components/ui/HapticSlider";
 import { trackToolOpened, trackFirstResultCompleted } from "../../lib/analytics";
+import { triggerHaptic } from "../../lib/haptics";
 import { BROSELOW_BANDS, getBand, WEIGHT_PRESETS } from "./broselow";
 
 // Tool accent (dose-cyan) — see DESIGN.md One Signal Rule.
@@ -206,101 +209,60 @@ function BroselowTape({ weight }: { weight: number }) {
   );
 }
 
-// ─── Weight Numpad (quick entry) ──────────────────────────────────────────────
-function NumpadWeight({
-  value,
-  onChange,
-}: {
-  value: number;
-  onChange: (v: number) => void;
-}) {
-  const [inputStr, setInputStr] = useState(String(value));
-  const [active, setActive] = useState(false);
-
-  const commit = useCallback(
-    (str: string) => {
-      const parsed = parseFloat(str);
-      if (!isNaN(parsed) && parsed >= 1 && parsed <= 50) {
-        onChange(parsed);
-      }
-    },
-    [onChange],
-  );
-
-  const handleDigit = (d: string) => {
-    setInputStr((prev) => {
-      let next = active ? prev : String(value);
-      if (d === "⌫") {
-        next = next.length > 1 ? next.slice(0, -1) : "0";
-      } else if (d === ".") {
-        next = next.includes(".") ? next : next + ".";
-      } else {
-        next = next === "0" ? d : next + d;
-        if (next.length > 4) return active ? prev : String(value);
-      }
-      commit(next);
-      return next;
-    });
-    if (typeof navigator !== "undefined" && navigator.vibrate)
-      navigator.vibrate(8);
-  };
-
-  const keys = ["7", "8", "9", "4", "5", "6", "1", "2", "3", ".", "0", "⌫"];
-
-  return (
-    <div>
-      <div className="mb-3 rounded-2xl border border-white/8 bg-slate-950/80 px-4 py-3 text-center">
-        <div className="text-[10px] font-bold uppercase tracking-[0.28em] text-slate-500">
-          Manual Weight Entry
-        </div>
-        <div className="mt-2 text-3xl font-black tabular-nums text-white">
-          {active ? inputStr : String(value)}
-          <span className="ml-1 text-sm font-bold text-slate-500">kg</span>
-        </div>
-      </div>
-      <div className="grid grid-cols-3 gap-2">
-        {keys.map((k) => (
-          <motion.button
-            key={k}
-            whileTap={{ scale: 0.88 }}
-            onPointerDown={() => {
-              setActive(true);
-              handleDigit(k);
-            }}
-            onPointerUp={() => setActive(false)}
-            className="h-12 rounded-2xl bg-slate-800/80 border border-white/5 text-slate-100 font-bold text-lg active:bg-slate-700/80 flex items-center justify-center"
-          >
-            {k === "⌫" ? "⌫" : k}
-          </motion.button>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 // ─── Main NeoDose Component ───────────────────────────────────────────────────
 export default function NeoDose({ embedded }: { embedded?: boolean } = {}) {
   const ContentTag = embedded ? 'div' : 'main'
   const [weight, setWeight] = useState(10);
   const [showNumpad, setShowNumpad] = useState(false);
+  const [rawWeight, setRawWeight] = useState<string | null>(null);
   const band = getBand(weight);
   const firstResultFired = useRef(false);
   const reduceMotion = useReducedMotion();
 
   useEffect(() => { trackToolOpened('dose'); }, []);
 
-  // Slider percentage
-  const sliderPct = ((weight - 1) / (50 - 1)) * 100;
+  const closeNumpad = () => {
+    setShowNumpad(false);
+    setRawWeight(null);
+  };
 
-  const handleSlider = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const v = parseFloat(e.target.value);
+  const handleSlider = (v: number) => {
     if (!firstResultFired.current) {
       firstResultFired.current = true;
       trackFirstResultCompleted('dose');
     }
     setWeight(v);
-    if (typeof navigator !== "undefined" && navigator.vibrate)
-      navigator.vibrate(6);
+  };
+
+  const commitWeight = (str: string) => {
+    const parsed = parseFloat(str);
+    if (!isNaN(parsed) && parsed >= 1 && parsed <= 50) setWeight(parsed);
+  };
+
+  // First keypress after opening the numpad starts a fresh entry rather than
+  // appending onto the currently-committed weight.
+  const handleNumpadKey = (k: string) => {
+    setRawWeight((prev) => {
+      const base = prev ?? "";
+      let next = base;
+      if (k === ".") {
+        next = base.includes(".") ? base : `${base}.`;
+      } else {
+        next = base === "" || base === "0" ? k : base + k;
+        if (next.length > 4) return base;
+      }
+      commitWeight(next);
+      return next;
+    });
+  };
+
+  const handleNumpadBackspace = () => {
+    setRawWeight((prev) => {
+      const base = prev ?? "";
+      const next = base.length > 1 ? base.slice(0, -1) : "";
+      commitWeight(next);
+      return next;
+    });
   };
 
   const meds = useMemo(
@@ -433,7 +395,7 @@ export default function NeoDose({ embedded }: { embedded?: boolean } = {}) {
             {/* Tappable big weight number → opens numpad */}
             <motion.button
               whileTap={{ scale: 0.93 }}
-              onClick={() => setShowNumpad((v) => !v)}
+              onClick={() => (showNumpad ? closeNumpad() : setShowNumpad(true))}
               className="flex items-baseline gap-1.5 px-4 py-1.5 rounded-2xl"
               style={{
                 background: `${band.color}18`,
@@ -468,8 +430,7 @@ export default function NeoDose({ embedded }: { embedded?: boolean } = {}) {
                 whileTap={{ scale: 0.88 }}
                 onClick={() => {
                   setWeight(w);
-                  if (typeof navigator !== "undefined" && navigator.vibrate)
-                    navigator.vibrate(10);
+                  triggerHaptic(10);
                 }}
                 className="shrink-0 px-3 py-1.5 rounded-full text-xs font-bold transition-all"
                 style={
@@ -492,42 +453,15 @@ export default function NeoDose({ embedded }: { embedded?: boolean } = {}) {
           </div>
 
           {/* Slider track */}
-          <div className="relative h-12 flex items-center">
-            <div className="absolute inset-y-0 left-0 right-0 flex items-center">
-              <div className="relative w-full h-2 rounded-full bg-slate-800 overflow-hidden">
-                <motion.div
-                  className="absolute left-0 top-0 bottom-0 rounded-full"
-                  style={{ width: `${sliderPct}%`, background: band.color }}
-                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                />
-              </div>
-            </div>
-            <input
-              type="range"
-              min={1}
-              max={50}
-              step={0.5}
-              value={weight}
-              onChange={handleSlider}
-              className="absolute inset-0 w-full opacity-0 cursor-pointer z-10 touch-none"
-            />
-            {/* Thumb */}
-            <motion.div
-              className="absolute pointer-events-none w-8 h-8 rounded-full shadow-lg flex items-center justify-center"
-              style={{
-                left: `calc(${sliderPct}% - 16px)`,
-                background: band.color,
-                boxShadow: `0 0 16px ${band.color}80`,
-              }}
-              animate={{ scale: 1 }}
-              whileTap={{ scale: 1.2 }}
-            >
-              <div className="flex gap-0.5">
-                <div className="w-0.5 h-3 bg-black/40 rounded-full" />
-                <div className="w-0.5 h-3 bg-black/40 rounded-full" />
-              </div>
-            </motion.div>
-          </div>
+          <HapticSlider
+            value={weight}
+            min={1}
+            max={50}
+            step={0.5}
+            onChange={handleSlider}
+            accentColor={band.color}
+            ariaLabel="Estimated weight in kilograms"
+          />
 
           {/* Broselow tape */}
           <div className="mt-3">
@@ -569,11 +503,25 @@ export default function NeoDose({ embedded }: { embedded?: boolean } = {}) {
             className="shrink-0 overflow-hidden bg-slate-900/95 border-b border-white/5"
           >
             <div className="p-4">
-              <NumpadWeight
-                value={weight}
-                onChange={(v) => {
-                  setWeight(v);
+              <div className="mb-3 rounded-2xl border border-white/8 bg-slate-950/80 px-4 py-3 text-center">
+                <div className="text-[10px] font-bold uppercase tracking-[0.28em] text-slate-500">
+                  Manual Weight Entry
+                </div>
+                <div className="mt-2 text-3xl font-black tabular-nums text-white">
+                  {rawWeight === null ? weight.toFixed(1) : rawWeight || "0"}
+                  <span className="ml-1 text-sm font-bold text-slate-500">kg</span>
+                </div>
+              </div>
+              <Numpad
+                accentStyle={{
+                  background: `${band.color}18`,
+                  borderColor: `${band.color}40`,
+                  color: band.color,
                 }}
+                nextLabel="Done"
+                onKeyPress={handleNumpadKey}
+                onBackspace={handleNumpadBackspace}
+                onNext={closeNumpad}
               />
             </div>
           </motion.div>
@@ -593,7 +541,7 @@ export default function NeoDose({ embedded }: { embedded?: boolean } = {}) {
           </span>
         </div>
 
-        <AnimatePresence mode="wait">
+        <AnimatePresence>
           {freeMeds.map((med, i) => (
             <MedCard key={med.name} med={med} index={i} />
           ))}
@@ -610,7 +558,7 @@ export default function NeoDose({ embedded }: { embedded?: boolean } = {}) {
           </span>
         </div>
 
-        <AnimatePresence mode="wait">
+        <AnimatePresence>
           {proMeds.map((med, i) => (
             <MedCard key={med.name} med={med} index={freeMeds.length + i} />
           ))}

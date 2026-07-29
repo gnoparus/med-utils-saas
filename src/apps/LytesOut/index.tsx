@@ -6,15 +6,16 @@ import {
   Check,
   ChevronDown,
   Copy,
-  Delete,
   Droplets,
   Lock,
   Pill,
   Zap,
 } from 'lucide-react'
 import { AppShellHeader } from '../../components/app-shell'
+import { Numpad } from '../../components/ui/Numpad'
 import { LabVial } from './LabVial'
 import { trackToolOpened, trackFirstResultCompleted, trackPaywallViewed, trackCheckoutStarted } from '../../lib/analytics'
+import { triggerHaptic } from '../../lib/haptics'
 import { STRIPE_MONTHLY_URL } from '../../lib/billing'
 import {
   GLOW_COLORS,
@@ -30,10 +31,6 @@ import {
 } from '../../lib/lytesout-calculator'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function triggerHaptic(pattern: number | number[] = 10) {
-  if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(pattern)
-}
 
 function clamp(v: number, min: number, max: number) { return Math.min(max, Math.max(min, v)) }
 
@@ -339,7 +336,6 @@ export default function LytesOut() {
     }
   }
 
-  const numpadKeys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '0']
   const isNormal = analysis.tier === 'normal'
 
   return (
@@ -389,7 +385,8 @@ export default function LytesOut() {
                       : {
                           background: 'rgba(15,23,42,0.6)',
                           borderColor: 'rgba(255,255,255,0.08)',
-                          color: '#64748b',
+                          // slate-400, not slate-500 — 500 falls below the 4.5:1 AA floor on this bg (DESIGN.md)
+                          color: '#94a3b8',
                         }
                   }
                 >
@@ -648,46 +645,14 @@ export default function LytesOut() {
                     />
                   </div>
 
-                  {/* Key grid */}
-                  <div className="grid grid-cols-3 gap-2 w-full max-w-sm mx-auto">
-                    {numpadKeys.map(k => {
-                      const isDisabled = k === '.' && !meta.allowDecimal
-                      return (
-                        <motion.button
-                          key={k}
-                          whileTap={{ scale: 0.88 }}
-                          onClick={() => !isDisabled && handleKey(k)}
-                          disabled={isDisabled}
-                          className={`h-12 rounded-2xl border text-slate-100 font-bold text-xl flex items-center justify-center select-none touch-manipulation transition-colors ${
-                            isDisabled
-                              ? 'opacity-20 border-white/5 bg-slate-800/30'
-                              : 'bg-slate-800/80 border-white/6 active:bg-slate-700/90'
-                          }`}
-                        >
-                          {k}
-                        </motion.button>
-                      )
-                    })}
-                    <motion.button
-                      whileTap={{ scale: 0.88 }}
-                      onClick={handleBackspace}
-                      className="h-12 rounded-2xl bg-red-500/10 border border-red-500/25 text-red-400 active:bg-red-500/20 flex items-center justify-center select-none touch-manipulation"
-                    >
-                      <Delete size={18} />
-                    </motion.button>
-                    <motion.button
-                      whileTap={{ scale: 0.94 }}
-                      onClick={() => setNumpadOpen(false)}
-                      className="col-span-3 h-12 rounded-[1.4rem] flex items-center justify-center font-black text-sm uppercase tracking-widest mt-1 select-none touch-manipulation"
-                      style={{
-                        background: lt.bg,
-                        border: `1px solid ${lt.border}`,
-                        color: lt.accent,
-                      }}
-                    >
-                      Done · Analyze
-                    </motion.button>
-                  </div>
+                  <Numpad
+                    accentStyle={{ background: lt.bg, borderColor: lt.border, color: lt.accent }}
+                    nextLabel="Done · Analyze"
+                    disabledKeys={meta.allowDecimal ? [] : ['.']}
+                    onKeyPress={handleKey}
+                    onBackspace={handleBackspace}
+                    onNext={() => setNumpadOpen(false)}
+                  />
                 </div>
               </motion.div>
             )}
