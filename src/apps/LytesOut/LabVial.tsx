@@ -39,8 +39,13 @@ export function LabVial({
   const normalLowPct = clamp((meta.normalLow - meta.inputMin) / range, 0, 1)
   const normalHighPct = clamp((meta.normalHigh - meta.inputMin) / range, 0, 1)
 
-  const springPct = useSpring(pct, reduceMotion ? { stiffness: 1000, damping: 100 } : { stiffness: 170, damping: 22 })
-  useEffect(() => { springPct.set(pct) }, [pct, springPct])
+  const springPct = useSpring(pct, { stiffness: 170, damping: 22 })
+  useEffect(() => {
+    // .set() always animates via spring physics, even at high stiffness —
+    // .jump() is the actual instant path prefers-reduced-motion needs.
+    if (reduceMotion) springPct.jump(pct)
+    else springPct.set(pct)
+  }, [pct, reduceMotion, springPct])
 
   const fillHeight = useTransform(springPct, (v) => v * VIAL_HEIGHT)
   const fillY = useTransform(fillHeight, (h) => VIAL_HEIGHT - h)
