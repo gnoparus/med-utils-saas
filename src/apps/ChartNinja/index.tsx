@@ -713,13 +713,13 @@ export default function ChartNinja() {
         <div
           ref={paywallRef}
           className="rounded-[1.8rem] border px-5 py-4 flex items-center gap-3"
-          style={{ background: 'rgba(167,139,250,0.07)', borderColor: 'rgba(167,139,250,0.22)' }}
+          style={{ background: `rgba(${NOTES_CORAL_RGB},0.07)`, borderColor: `rgba(${NOTES_CORAL_RGB},0.22)` }}
         >
           <div
             className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl"
-            style={{ background: 'rgba(167,139,250,0.15)', border: '1px solid rgba(167,139,250,0.25)' }}
+            style={{ background: `rgba(${NOTES_CORAL_RGB},0.15)`, border: `1px solid rgba(${NOTES_CORAL_RGB},0.25)` }}
           >
-            <Lock size={16} className="text-purple-400" />
+            <Lock size={16} style={{ color: NOTES_CORAL }} />
           </div>
           <div className="flex-1 min-w-0">
             <div className="text-xs font-black text-slate-100">Shiftside Pro</div>
@@ -734,9 +734,9 @@ export default function ChartNinja() {
             onClick={() => { triggerHaptic([10, 20, 40]); trackCheckoutStarted('monthly') }}
             className="shrink-0 rounded-2xl px-3.5 py-2 text-[11px] font-black no-underline"
             style={{
-              background: 'rgba(167,139,250,0.2)',
-              border: '1px solid rgba(167,139,250,0.3)',
-              color: '#a78bfa',
+              background: `rgba(${NOTES_CORAL_RGB},0.2)`,
+              border: `1px solid rgba(${NOTES_CORAL_RGB},0.3)`,
+              color: NOTES_CORAL,
             }}
           >
             Unlock Pro

@@ -502,16 +502,16 @@ export default function DripDrop({ embedded }: { embedded?: boolean } = {}) {
           </motion.button>
 
           {/* ── Premium Upsell ── */}
-          <div ref={paywallRef} className="relative overflow-hidden rounded-[1.8rem] border border-blue-400/18 bg-blue-500/5 p-5 mt-4">
-            <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(circle at top right, rgba(59,130,246,0.14), transparent 40%)' }} />
-            <div className="relative flex items-center gap-2 text-blue-300 mb-3">
+          <div ref={paywallRef} className="relative overflow-hidden rounded-[1.8rem] border border-sky-400/18 bg-sky-500/5 p-5 mt-4">
+            <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(circle at top right, rgba(125,211,252,0.14), transparent 40%)' }} />
+            <div className="relative flex items-center gap-2 text-sky-300 mb-3">
               <Lock size={14} />
               <div className="text-[11px] font-black uppercase tracking-[0.26em]">Shiftside Pro</div>
             </div>
             <div className="relative grid grid-cols-2 gap-2 blur-[1.5px] pointer-events-none mb-4">
               {['Custom Concentrations', 'Saved Drug Profiles', 'Titration Log', 'Weight-Based Targets'].map((f) => (
-                <div key={f} className="rounded-2xl border border-blue-300/14 bg-slate-950/70 px-3 py-3">
-                  <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-blue-200/70">{f}</div>
+                <div key={f} className="rounded-2xl border border-sky-300/14 bg-slate-950/70 px-3 py-3">
+                  <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-sky-200/70">{f}</div>
                 </div>
               ))}
             </div>
@@ -520,16 +520,16 @@ export default function DripDrop({ embedded }: { embedded?: boolean } = {}) {
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => trackCheckoutStarted('monthly')}
-              className="relative flex items-start gap-3 rounded-[1.4rem] border border-blue-300/18 bg-slate-950/75 p-4 no-underline"
+              className="relative flex items-start gap-3 rounded-[1.4rem] border border-sky-300/18 bg-slate-950/75 p-4 no-underline"
             >
-              <Lock size={16} className="mt-0.5 shrink-0 text-blue-300" />
+              <Lock size={16} className="mt-0.5 shrink-0 text-sky-300" />
               <div>
-                <div className="text-sm font-black text-blue-100">Unlock Shiftside Pro</div>
-                <p className="mt-1 text-xs leading-relaxed text-blue-50/75">
+                <div className="text-sm font-black text-sky-100">Unlock Shiftside Pro</div>
+                <p className="mt-1 text-xs leading-relaxed text-sky-50/75">
                   {activeDrug.premiumConcs.length} custom concentrations for {activeDrug.name}, titration history, and saved profiles.
                 </p>
               </div>
-              <div className="ml-auto shrink-0 rounded-full bg-blue-300 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-950">
+              <div className="ml-auto shrink-0 rounded-full bg-sky-300 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-950">
                 Upgrade
               </div>
             </a>
