@@ -1,7 +1,7 @@
 import React from "react";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import ChartNinja from "../../src/apps/ChartNinja";
 
 const DRAFT_KEY = "shiftside:chartninja:draft";
@@ -35,5 +35,47 @@ describe("ChartNinja draft persistence", () => {
 
     // Progress ring reflects the restored selection instead of resetting to 0.
     expect(screen.getByText("1/5")).toBeTruthy();
+  });
+
+  it("clears the template's draft once the note is copied to the chart", async () => {
+    const clipboard = { writeText: vi.fn().mockResolvedValue(undefined) };
+    // @ts-expect-error -- clipboard isn't part of jsdom's Navigator type
+    globalThis.navigator.clipboard = clipboard;
+
+    render(
+      <MemoryRouter initialEntries={["/chartninja"]}>
+        <ChartNinja />
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /Chest Pain/i }));
+    fireEvent.click(screen.getByRole("button", { name: /Acute \(<1h\)/i }));
+    fireEvent.click(screen.getByRole("button", { name: /Disposition Plan/i })); // expand the collapsed card
+    fireEvent.click(screen.getByRole("button", { name: /Admit Tele/i }));
+
+    const copyButton = await screen.findByRole("button", { name: /Copy for Chart/i });
+    fireEvent.click(copyButton);
+
+    await waitFor(() => {
+      const draft = JSON.parse(localStorage.getItem(DRAFT_KEY) ?? "{}");
+      expect(draft.fieldValues.admission).toEqual({});
+    });
+  });
+
+  it("does not recount a restored draft as a new first-result completion", () => {
+    localStorage.setItem(
+      DRAFT_KEY,
+      JSON.stringify({ templateId: "admission", fieldValues: { admission: { cc: "chest pain" } } }),
+    );
+    const gtag = vi.fn();
+    globalThis.window.gtag = gtag;
+
+    render(
+      <MemoryRouter initialEntries={["/chartninja"]}>
+        <ChartNinja />
+      </MemoryRouter>,
+    );
+
+    expect(gtag).not.toHaveBeenCalledWith("event", "first_result_completed", expect.anything());
   });
 });

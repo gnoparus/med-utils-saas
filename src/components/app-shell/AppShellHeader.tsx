@@ -126,7 +126,7 @@ export function AppShellHeader({ toolId, rightSlot }: AppShellHeaderProps) {
                 to={tool.route}
                 aria-current={isActive ? 'page' : undefined}
                 aria-label={`Open ${tool.name}`}
-                className="relative inline-flex shrink-0 items-center gap-2 rounded-full border px-3.5 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] outline-hidden transition-all duration-200 after:absolute after:-inset-x-1 after:-inset-y-1.5 after:content-[''] focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2"
+                className="inline-flex shrink-0 items-center gap-2 rounded-full border px-3.5 py-3.5 text-[11px] font-semibold uppercase tracking-[0.22em] outline-hidden transition-all duration-200 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2"
                 style={
                   isActive
                     ? {

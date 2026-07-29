@@ -377,11 +377,13 @@ function SnippetPanel({
   complete,
   glowKey,
   template,
+  onCopied,
 }: {
   snippet: string
   complete: boolean
   glowKey: GlowKey
   template: NoteTemplate
+  onCopied: () => void
 }) {
   const [copied, setCopied] = useState(false)
 
@@ -389,6 +391,7 @@ function SnippetPanel({
     try {
       await navigator.clipboard.writeText(snippet)
       setCopied(true)
+      onCopied()
       triggerHaptic([20, 40, 20])
       setTimeout(() => setCopied(false), 2400)
     } catch {
@@ -502,7 +505,9 @@ export default function ChartNinja() {
     () => loadDraft().fieldValues ?? {}
   )
   const paywallRef = useRef<HTMLDivElement>(null)
-  const firstResultFired = useRef(false)
+  // A restored draft already had its "first result" moment in the session that
+  // created it — don't recount it as a fresh completion on this mount.
+  const firstResultFired = useRef(Object.keys(loadDraft().fieldValues ?? {}).length > 0)
 
   useEffect(() => { trackToolOpened('notes') }, [])
 
@@ -555,6 +560,12 @@ export default function ChartNinja() {
         [fieldId]: value,
       },
     }))
+  }, [selectedTemplate.id])
+
+  const handleNoteCopied = useCallback(() => {
+    // The note has been copied to the chart — clear its draft so a later
+    // visit doesn't silently restore a stale, already-used note.
+    setFieldValues(prev => ({ ...prev, [selectedTemplate.id]: {} }))
   }, [selectedTemplate.id])
 
   const handleReset = useCallback(() => {
@@ -662,6 +673,7 @@ export default function ChartNinja() {
           complete={complete}
           glowKey={glowKey}
           template={selectedTemplate}
+          onCopied={handleNoteCopied}
         />
 
         {/* Reset */}
