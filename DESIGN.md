@@ -121,6 +121,8 @@ Dark, desaturated navy carries the frame; each tool injects one saturated signal
 ### Named Rules
 **The One Signal Rule.** A screen shows exactly one tool accent at a time (its own), plus neutral chrome. Never mix two tool accents on the same screen outside the tool switcher itself.
 
+**Status-color exception.** Clinical severity/status readouts (e.g. Shiftside ABG's "balanced" vs. acidosis/alkalosis states) use a fixed semantic vocabulary — green/amber/red — independent of the tool's own signal accent, the same way a monitor's alarm colors don't follow the lead trace color. This is the one deliberate exception to the One Signal Rule: a status color is reporting a clinical state, not tool identity, and should never be repainted to match the tool accent.
+
 ## 3. Typography
 
 **Display Font:** Iowan Old Style (with Palatino Linotype, Book Antiqua, Georgia, serif fallback)

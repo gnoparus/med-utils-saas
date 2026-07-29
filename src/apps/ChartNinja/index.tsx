@@ -11,6 +11,7 @@ import {
 } from 'lucide-react'
 import { AppShellHeader } from '../../components/app-shell'
 import { trackToolOpened, trackFirstResultCompleted, trackPaywallViewed, trackCheckoutStarted } from '../../lib/analytics'
+import { triggerHaptic } from '../../lib/haptics'
 import { STRIPE_MONTHLY_URL } from '../../lib/billing'
 import {
   NOTE_TEMPLATES,
@@ -22,9 +23,6 @@ import {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function triggerHaptic(pattern: number | number[] = 10) {
-  if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(pattern)
-}
 
 const DRAFT_STORAGE_KEY = 'shiftside:chartninja:draft'
 

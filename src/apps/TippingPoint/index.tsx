@@ -14,6 +14,7 @@ import {
 } from 'lucide-react'
 import { AppShellHeader } from '../../components/app-shell'
 import { trackToolOpened, trackFirstResultCompleted } from '../../lib/analytics'
+import { triggerHaptic } from '../../lib/haptics'
 import { Numpad } from '../../components/ui/Numpad'
 import { TIPPING_POINT_PRESETS, analyzeAbg, type AbgAnalysis } from '../../lib/tippingpoint-calculator'
 
@@ -98,11 +99,6 @@ const GLOW_STYLES = {
   },
 } as const
 
-function triggerHaptic(pattern: number | number[] = 10) {
-  if (typeof navigator !== 'undefined' && navigator.vibrate) {
-    navigator.vibrate(pattern)
-  }
-}
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value))
@@ -781,7 +777,7 @@ export default function TippingPoint({ embedded }: { embedded?: boolean } = {}) 
                 transition={{ type: 'spring', stiffness: 240, damping: 24 }}
                 className="overflow-hidden"
               >
-                <div className="pt-3">
+                <div className="max-h-[60vh] overflow-y-auto pt-3">
                   <Numpad
                     onKeyPress={handleKeyPress}
                     onBackspace={handleBackspace}
