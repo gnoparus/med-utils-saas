@@ -315,7 +315,7 @@ export default function DripDrop({ embedded }: { embedded?: boolean } = {}) {
         />
       </AnimatePresence>
 
-      <div className="relative mx-auto flex h-full w-full max-w-md flex-col lg:max-w-lg">
+      <div className={embedded ? 'relative flex h-full w-full flex-col' : 'relative mx-auto flex h-full w-full max-w-md flex-col lg:max-w-lg'}>
         {!embedded && <AppShellHeader toolId="drips" />}
 
         <ContentTag id={embedded ? undefined : 'main-content'} tabIndex={-1} className="flex min-h-0 flex-1 flex-col outline-none">
