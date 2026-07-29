@@ -4,6 +4,7 @@ import {
   AnimatePresence,
   useSpring,
   useTransform,
+  useReducedMotion,
 } from "framer-motion";
 import {
   Zap,
@@ -45,6 +46,7 @@ interface MedCardProps {
 function MedCard({ med, index }: MedCardProps) {
   const spring = useSpring(med.calcDose, { stiffness: 200, damping: 20 });
   const displayDose = useTransform(spring, (v) => v.toFixed(1));
+  const reduceMotion = useReducedMotion();
 
   useEffect(() => {
     spring.set(med.calcDose);
@@ -72,8 +74,12 @@ function MedCard({ med, index }: MedCardProps) {
         <motion.div
           className="absolute inset-0 rounded-3xl pointer-events-none"
           style={{ border: `2px solid ${med.accent}` }}
-          animate={{ opacity: [0.6, 0, 0.6] }}
-          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          animate={reduceMotion ? { opacity: 0.6 } : { opacity: [0.6, 0, 0.6] }}
+          transition={
+            reduceMotion
+              ? { duration: 0 }
+              : { duration: 2, repeat: Infinity, ease: "easeInOut" }
+          }
         />
       )}
 
@@ -279,6 +285,7 @@ export default function NeoDose({ embedded }: { embedded?: boolean } = {}) {
   const [showNumpad, setShowNumpad] = useState(false);
   const band = getBand(weight);
   const firstResultFired = useRef(false);
+  const reduceMotion = useReducedMotion();
 
   useEffect(() => { trackToolOpened('dose'); }, []);
 
@@ -597,7 +604,7 @@ export default function NeoDose({ embedded }: { embedded?: boolean } = {}) {
             Advanced Pharmacy
           </span>
           <div className="flex-1 h-px bg-slate-800" />
-          <span className="text-[10px] text-amber-400 font-bold uppercase tracking-widest bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-full">
+          <span className="text-[10px] text-cyan-400 font-bold uppercase tracking-widest bg-cyan-500/10 border border-cyan-500/20 px-2 py-0.5 rounded-full">
             Shiftside Pro
           </span>
         </div>
@@ -615,23 +622,31 @@ export default function NeoDose({ embedded }: { embedded?: boolean } = {}) {
             className="w-full py-4 rounded-3xl font-bold text-base flex items-center justify-center gap-3 relative overflow-hidden"
             style={{
               background:
-                "linear-gradient(135deg, rgba(124,58,237,0.3), rgba(16,185,129,0.2))",
-              border: "1px solid rgba(124,58,237,0.4)",
+                "linear-gradient(135deg, rgba(6,182,212,0.3), rgba(103,232,249,0.2))",
+              border: "1px solid rgba(6,182,212,0.4)",
             }}
           >
             <motion.div
               className="absolute inset-0 pointer-events-none"
-              animate={{
-                background: [
-                  "linear-gradient(100deg, transparent 20%, rgba(255,255,255,0.04) 50%, transparent 80%)",
-                  "linear-gradient(100deg, transparent 60%, rgba(255,255,255,0.04) 90%, transparent 100%)",
-                ],
-              }}
-              transition={{ duration: 2.5, repeat: Infinity, ease: "linear" }}
+              animate={
+                reduceMotion
+                  ? undefined
+                  : {
+                      background: [
+                        "linear-gradient(100deg, transparent 20%, rgba(255,255,255,0.04) 50%, transparent 80%)",
+                        "linear-gradient(100deg, transparent 60%, rgba(255,255,255,0.04) 90%, transparent 100%)",
+                      ],
+                    }
+              }
+              transition={
+                reduceMotion
+                  ? { duration: 0 }
+                  : { duration: 2.5, repeat: Infinity, ease: "linear" }
+              }
             />
-            <Lock size={16} className="text-purple-300" />
+            <Lock size={16} className="text-cyan-300" />
             <span className="text-slate-100">Unlock Shiftside Pro</span>
-            <span className="bg-gradient-to-r from-purple-500 to-emerald-500 text-white text-xs px-3 py-1 rounded-full font-black">
+            <span className="bg-cyan-300 text-slate-950 text-xs px-3 py-1 rounded-full font-black">
               Full toolkit
             </span>
           </motion.button>

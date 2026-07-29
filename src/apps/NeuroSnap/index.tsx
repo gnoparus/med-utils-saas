@@ -740,10 +740,10 @@ function NihssTab() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ type: 'spring', stiffness: 260, damping: 22 }}
-            className="w-full max-w-sm rounded-[2rem] border border-purple-500/30 bg-slate-900/90 p-7 flex flex-col items-center text-center shadow-2xl"
+            className="w-full max-w-sm rounded-[2rem] border border-green-500/30 bg-slate-900/90 p-7 flex flex-col items-center text-center shadow-2xl"
           >
-            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-[1.4rem] bg-purple-500/15 border border-purple-500/25">
-              <Lock size={28} className="text-purple-400" />
+            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-[1.4rem] bg-green-500/15 border border-green-500/25">
+              <Lock size={28} className="text-green-400" />
             </div>
             <h2 className="text-xl font-black text-white tracking-tight">Shiftside Pro</h2>
             <p className="mt-2 text-sm text-slate-400 leading-relaxed">
@@ -751,11 +751,11 @@ function NihssTab() {
               Hunt &amp; Hess scale, and EHR export.
             </p>
 
-            <div className="mt-6 w-full rounded-2xl border border-purple-500/25 bg-purple-500/10 px-4 py-3">
-              <div className="text-[10px] font-black uppercase tracking-[0.28em] text-purple-400 mb-2">Included in Shiftside Pro</div>
+            <div className="mt-6 w-full rounded-2xl border border-green-500/25 bg-green-500/10 px-4 py-3">
+              <div className="text-[10px] font-black uppercase tracking-[0.28em] text-green-400 mb-2">Included in Shiftside Pro</div>
               {['NIHSS 0–42 full scoring', 'Stroke severity + tPA eligibility', 'Hunt & Hess scale', 'EHR chart note export'].map(f => (
                 <div key={f} className="flex items-center gap-2 py-1">
-                  <Check size={12} className="text-purple-400 shrink-0" />
+                  <Check size={12} className="text-green-400 shrink-0" />
                   <span className="text-xs font-bold text-slate-300">{f}</span>
                 </div>
               ))}
@@ -766,8 +766,8 @@ function NihssTab() {
               onClick={() => triggerHaptic([10, 20, 40])}
               className="mt-6 w-full rounded-[1.6rem] px-5 py-4 text-base font-black text-white"
               style={{
-                background: 'linear-gradient(135deg, rgba(139,92,246,0.7), rgba(167,139,250,0.5))',
-                border: '1px solid rgba(167,139,250,0.4)',
+                background: 'linear-gradient(135deg, rgba(34,197,94,0.7), rgba(134,239,172,0.5))',
+                border: '1px solid rgba(134,239,172,0.4)',
               }}
             >
               Unlock Shiftside Pro

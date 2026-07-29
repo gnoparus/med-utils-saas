@@ -1,5 +1,5 @@
 import { useDeferredValue, useMemo, useState, useTransition, useEffect, useRef } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import {
   Activity,
   BadgeAlert,
@@ -163,6 +163,7 @@ function formatMeasuredValue(key: FieldKey, value: number) {
 
 function BalanceScale({ analysis }: { analysis: AbgAnalysis }) {
   const glow = GLOW_STYLES[analysis.glowState]
+  const reduceMotion = useReducedMotion()
   const acidDrivers = [
     analysis.metabolicStatus.direction === 'acid' ? `HCO3 ${analysis.input.hco3.toFixed(0)}` : null,
     analysis.respiratoryStatus.direction === 'acid' ? `PaCO2 ${analysis.input.pco2.toFixed(0)}` : null,
@@ -292,8 +293,16 @@ function BalanceScale({ analysis }: { analysis: AbgAnalysis }) {
 
         <motion.div
           className="absolute left-1/2 top-8 flex h-16 w-16 -translate-x-1/2 items-center justify-center rounded-full border"
-          animate={{ scale: analysis.compensation.kind === 'mixed' ? [1, 1.05, 1] : [1, 1.1, 1] }}
-          transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
+          animate={
+            reduceMotion
+              ? { scale: 1 }
+              : { scale: analysis.compensation.kind === 'mixed' ? [1, 1.05, 1] : [1, 1.1, 1] }
+          }
+          transition={
+            reduceMotion
+              ? { duration: 0 }
+              : { duration: 2.4, repeat: Infinity, ease: 'easeInOut' }
+          }
           style={{
             background: glow.panel,
             borderColor: glow.border,
