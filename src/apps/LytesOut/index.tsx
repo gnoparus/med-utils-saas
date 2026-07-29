@@ -13,6 +13,7 @@ import {
   Zap,
 } from 'lucide-react'
 import { AppShellHeader } from '../../components/app-shell'
+import { LabVial } from './LabVial'
 import { trackToolOpened, trackFirstResultCompleted, trackPaywallViewed, trackCheckoutStarted } from '../../lib/analytics'
 import { STRIPE_MONTHLY_URL } from '../../lib/billing'
 import {
@@ -55,72 +56,6 @@ function appendValue(raw: string, key: string, meta: ElectrolyteMeta): string {
 function parseValue(raw: string, meta: ElectrolyteMeta): number {
   const v = parseFloat(raw)
   return Number.isNaN(v) ? meta.defaultValue : clamp(v, meta.inputMin, meta.inputMax)
-}
-
-// ─── Severity gauge ───────────────────────────────────────────────────────────
-
-function SeverityGauge({
-  meta,
-  value,
-  glowState,
-}: {
-  meta: ElectrolyteMeta
-  value: number
-  glowState: GlowState
-}) {
-  const glow = GLOW_COLORS[glowState]
-  const range = meta.inputMax - meta.inputMin
-  const pct = clamp(((value - meta.inputMin) / range) * 100, 0, 100)
-  const normalLowPct = ((meta.normalLow - meta.inputMin) / range) * 100
-  const normalHighPct = ((meta.normalHigh - meta.inputMin) / range) * 100
-
-  const springPct = useSpring(pct, { stiffness: 200, damping: 22 })
-  const cursorLeft = useTransform(springPct, v => `calc(${v}% - 10px)`)
-  const fillWidth = useTransform(springPct, v => `${v}%`)
-
-  useEffect(() => { springPct.set(pct) }, [pct, springPct])
-
-  return (
-    <div className="px-1">
-      {/* Bar */}
-      <div className="relative h-2.5 rounded-full bg-slate-800/80 overflow-visible mb-4">
-        {/* Normal zone highlight */}
-        <div
-          className="absolute top-0 h-full rounded-full"
-          style={{
-            left: `${normalLowPct}%`,
-            width: `${normalHighPct - normalLowPct}%`,
-            background: 'rgba(16,185,129,0.35)',
-          }}
-        />
-        {/* Animated fill */}
-        <motion.div
-          className="absolute top-0 left-0 h-full rounded-full"
-          style={{
-            width: fillWidth,
-            background: `linear-gradient(to right, rgba(${glow.rgb},0.3), rgba(${glow.rgb},0.85))`,
-          }}
-        />
-        {/* Cursor */}
-        <motion.div
-          className="absolute top-1/2 w-5 h-5 rounded-full border-2 border-white/90 -translate-y-1/2 shadow-lg pointer-events-none"
-          style={{
-            left: cursorLeft,
-            background: glow.accent,
-            boxShadow: `0 0 10px rgba(${glow.rgb},0.7)`,
-          }}
-        />
-      </div>
-      {/* Range labels */}
-      <div className="flex justify-between text-[10px] font-bold tabular-nums mt-1">
-        <span className="text-slate-600">{meta.inputMin}</span>
-        <span style={{ color: '#10b981' }}>
-          Normal: {meta.normalLow}–{meta.normalHigh} {meta.unit}
-        </span>
-        <span className="text-slate-600">{meta.inputMax}</span>
-      </div>
-    </div>
-  )
 }
 
 // ─── Repletion card ───────────────────────────────────────────────────────────
@@ -487,7 +422,19 @@ export default function LytesOut() {
                 <UrgencyBadge label={analysis.urgencyLabel} glowState={analysis.glowState} />
               </div>
 
-              <SeverityGauge meta={meta} value={parsedValue} glowState={analysis.glowState} />
+              <div className="flex items-center gap-5">
+                <LabVial meta={meta} value={parsedValue} glowState={analysis.glowState} />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-baseline gap-1.5">
+                    <AnimatedValue value={parsedValue} meta={meta} />
+                    <span className="text-xs font-bold text-slate-500">{meta.unit}</span>
+                  </div>
+                  <div className="mt-3 flex justify-between text-[10px] font-bold tabular-nums text-slate-600">
+                    <span>{meta.inputMin}</span>
+                    <span>{meta.inputMax}</span>
+                  </div>
+                </div>
+              </div>
 
               {analysis.deficitNote && (
                 <motion.div
