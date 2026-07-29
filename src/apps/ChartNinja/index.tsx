@@ -26,6 +26,22 @@ function triggerHaptic(pattern: number | number[] = 10) {
   if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(pattern)
 }
 
+const DRAFT_STORAGE_KEY = 'shiftside:chartninja:draft'
+
+type ChartNinjaDraft = {
+  templateId?: string
+  fieldValues?: Record<string, Record<string, string | string[]>>
+}
+
+function loadDraft(): ChartNinjaDraft {
+  try {
+    const raw = localStorage.getItem(DRAFT_STORAGE_KEY)
+    return raw ? JSON.parse(raw) : {}
+  } catch {
+    return {}
+  }
+}
+
 const GLOW = {
   sky:    { accent: '#38bdf8', rgb: '56,189,248',   panel: 'rgba(56,189,248,0.12)',   border: 'rgba(56,189,248,0.28)'   },
   purple: { accent: '#a78bfa', rgb: '167,139,250',  panel: 'rgba(167,139,250,0.12)', border: 'rgba(167,139,250,0.28)'  },
@@ -478,12 +494,28 @@ function SnippetPanel({
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function ChartNinja() {
-  const [selectedTemplate, setSelectedTemplate] = useState<NoteTemplate>(NOTE_TEMPLATES[0])
-  const [fieldValues, setFieldValues] = useState<Record<string, Record<string, string | string[]>>>({})
+  const [selectedTemplate, setSelectedTemplate] = useState<NoteTemplate>(() => {
+    const draft = loadDraft()
+    return NOTE_TEMPLATES.find(t => t.id === draft.templateId) ?? NOTE_TEMPLATES[0]
+  })
+  const [fieldValues, setFieldValues] = useState<Record<string, Record<string, string | string[]>>>(
+    () => loadDraft().fieldValues ?? {}
+  )
   const paywallRef = useRef<HTMLDivElement>(null)
   const firstResultFired = useRef(false)
 
   useEffect(() => { trackToolOpened('notes') }, [])
+
+  // Persist the in-progress note as a draft — a tool switch or accidental nav
+  // tap must not silently discard chart text the clinician hasn't copied yet.
+  useEffect(() => {
+    try {
+      const draft: ChartNinjaDraft = { templateId: selectedTemplate.id, fieldValues }
+      localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(draft))
+    } catch {
+      // localStorage unavailable (private browsing, quota) — draft just won't persist
+    }
+  }, [selectedTemplate.id, fieldValues])
 
   useEffect(() => {
     if (!firstResultFired.current && Object.keys(fieldValues).length > 0) {
