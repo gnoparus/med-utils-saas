@@ -38,4 +38,45 @@ describe("NeoDose numpad", () => {
     expect(screen.getByText("50")).toBeTruthy();
     expect(weightBadge.textContent).toContain("50.0");
   });
+
+  it("reverts the manual entry display to the committed weight after backspacing to empty", () => {
+    render(
+      <MemoryRouter>
+        <NeoDose />
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(screen.getByText("10.0").closest("button")!);
+    fireEvent.click(screen.getByRole("button", { name: "9" }));
+
+    const entryPanel = screen.getByText("Manual Weight Entry").parentElement!;
+    expect(entryPanel.textContent).toContain("9kg"); // typed digit, weight committed to 9
+
+    fireEvent.click(screen.getByRole("button", { name: "Backspace" }));
+
+    // Must fall back to the committed weight (9.0), never a bare "0" while
+    // the med cards are still dosed for 9.
+    expect(entryPanel.textContent).toContain("9.0");
+    expect(entryPanel.textContent).not.toContain("0.0kg");
+  });
+
+  it("resets the manual entry buffer when the slider moves, so typing doesn't append onto a stale digit", () => {
+    render(
+      <MemoryRouter>
+        <NeoDose />
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(screen.getByText("10.0").closest("button")!);
+    fireEvent.click(screen.getByRole("button", { name: "2" }));
+
+    const slider = screen.getByRole("slider", { name: /Estimated weight/i });
+    fireEvent.change(slider, { target: { value: "20" } });
+
+    fireEvent.click(screen.getByRole("button", { name: "5" }));
+
+    const entryPanel = screen.getByText("Manual Weight Entry").parentElement!;
+    expect(entryPanel.textContent).toContain("5kg"); // fresh entry, not "25"
+    expect(entryPanel.textContent).not.toContain("25");
+  });
 });

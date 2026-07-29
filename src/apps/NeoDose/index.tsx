@@ -232,6 +232,9 @@ export default function NeoDose({ embedded }: { embedded?: boolean } = {}) {
       trackFirstResultCompleted('dose');
     }
     setWeight(v);
+    // Dragging the slider while a manual entry is in progress must not let a
+    // later digit press append onto the now-stale typed string.
+    setRawWeight(null);
   };
 
   // Clamps to the supported range and commits. Returns the clamped display
@@ -266,6 +269,10 @@ export default function NeoDose({ embedded }: { embedded?: boolean } = {}) {
     setRawWeight((prev) => {
       const base = prev ?? "";
       const next = base.length > 1 ? base.slice(0, -1) : "";
+      // Backspacing everything away falls back to "not typing" (null) so the
+      // display reverts to the last committed weight instead of showing "0"
+      // while the med cards are still dosed for the prior valid value.
+      if (next === "") return null;
       return commitWeight(next) ?? next;
     });
   };
