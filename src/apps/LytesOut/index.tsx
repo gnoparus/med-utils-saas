@@ -37,6 +37,28 @@ function triggerHaptic(pattern: number | number[] = 10) {
 
 function clamp(v: number, min: number, max: number) { return Math.min(max, Math.max(min, v)) }
 
+// ponytail: electrolyte "identity" colors used to come from the lib's
+// per-electrolyte rainbow (meta.accentColor/accentBg/accentBorder/accentRgb)
+// — that's row decoration (which lyte is this), not severity, so we ignore
+// those lib fields here and tint every electrolyte with lytes-amber instead,
+// varying only container alpha by list position. Severity (GLOW_COLORS,
+// tied to analysis.glowState) is untouched — that's a genuine clinical signal.
+const LYTES_AMBER = '#FCD34D'
+const LYTES_AMBER_RGB = '252,211,77'
+
+const LYTE_ORDER: ElectrolyteId[] = ['k', 'mg', 'po4', 'ca', 'na']
+
+function lyteTint(id: ElectrolyteId) {
+  const idx = LYTE_ORDER.indexOf(id)
+  const alpha = 0.10 + Math.max(idx, 0) * 0.04
+  return {
+    accent: LYTES_AMBER,
+    rgb: LYTES_AMBER_RGB,
+    bg: `rgba(${LYTES_AMBER_RGB},${alpha.toFixed(2)})`,
+    border: `rgba(${LYTES_AMBER_RGB},${(alpha + 0.18).toFixed(2)})`,
+  }
+}
+
 function appendValue(raw: string, key: string, meta: ElectrolyteMeta): string {
   if (key === '.') {
     if (!meta.allowDecimal || raw.includes('.')) return raw
@@ -71,18 +93,19 @@ function RepleteCard({
 }) {
   const isNoAction = opt.id.endsWith('-normal')
   const iconEl = opt.routeIcon === 'pill' ? <Pill size={15} /> : opt.routeIcon === 'bolt' ? <Zap size={15} /> : <Droplets size={15} />
+  const t = lyteTint(meta.id)
 
   const bg = opt.isUrgent
     ? 'rgba(251,113,133,0.08)'
     : isNoAction
     ? 'rgba(16,185,129,0.06)'
-    : meta.accentBg
+    : t.bg
   const borderColor = opt.isUrgent
     ? 'rgba(251,113,133,0.3)'
     : isNoAction
     ? 'rgba(16,185,129,0.25)'
-    : meta.accentBorder
-  const iconColor = opt.isUrgent ? '#fb7185' : isNoAction ? '#10b981' : meta.accentColor
+    : t.border
+  const iconColor = opt.isUrgent ? '#fb7185' : isNoAction ? '#10b981' : t.accent
 
   return (
     <motion.div
@@ -157,7 +180,7 @@ function RepleteCard({
           <div className="space-y-2">
             {opt.notes.map((note, i) => (
               <div key={i} className="flex gap-2 text-[11px] text-slate-400 leading-snug">
-                <span className="text-slate-600 shrink-0 mt-0.5">•</span>
+                <span className="text-slate-400 shrink-0 mt-0.5">•</span>
                 <span>{note}</span>
               </div>
             ))}
@@ -249,6 +272,7 @@ export default function LytesOut() {
   const parsedValue = useMemo(() => parseValue(rawValue, meta), [rawValue, meta])
   const analysis: ElectrolyteAnalysis = useMemo(() => analyzeLyte(activeId, parsedValue), [activeId, parsedValue])
   const glow = GLOW_COLORS[analysis.glowState]
+  const lt = lyteTint(activeId)
 
   useEffect(() => { trackToolOpened('lytes') }, [])
 
@@ -330,9 +354,9 @@ export default function LytesOut() {
           className="absolute inset-0 pointer-events-none"
           style={{
             background: `
-              radial-gradient(circle at 15% 5%, rgba(${meta.accentRgb},0.14), transparent 30%),
+              radial-gradient(circle at 15% 5%, rgba(${lt.rgb},0.14), transparent 30%),
               radial-gradient(circle at 85% 8%, rgba(${glow.rgb},0.12), transparent 30%),
-              radial-gradient(circle at 50% 100%, rgba(${meta.accentRgb},0.08), transparent 42%)
+              radial-gradient(circle at 50% 100%, rgba(${lt.rgb},0.08), transparent 42%)
             `,
           }}
         />
@@ -345,30 +369,33 @@ export default function LytesOut() {
         {/* ── Electrolyte tab strip ── */}
         <div className="shrink-0 px-4 mb-3">
           <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
-            {LYTES.map(lyte => (
-              <motion.button
-                key={lyte.id}
-                whileTap={{ scale: 0.94 }}
-                onClick={() => handleLyteChange(lyte.id)}
-                className="shrink-0 px-5 py-2.5 rounded-2xl text-sm font-black tracking-wide transition-all duration-200 border"
-                style={
-                  activeId === lyte.id
-                    ? {
-                        background: lyte.accentBg,
-                        borderColor: `${lyte.accentColor}66`,
-                        color: lyte.accentColor,
-                        boxShadow: `0 0 18px rgba(${lyte.accentRgb},0.22)`,
-                      }
-                    : {
-                        background: 'rgba(15,23,42,0.6)',
-                        borderColor: 'rgba(255,255,255,0.08)',
-                        color: '#64748b',
-                      }
-                }
-              >
-                {lyte.name}
-              </motion.button>
-            ))}
+            {LYTES.map(lyte => {
+              const lt = lyteTint(lyte.id)
+              return (
+                <motion.button
+                  key={lyte.id}
+                  whileTap={{ scale: 0.94 }}
+                  onClick={() => handleLyteChange(lyte.id)}
+                  className="shrink-0 px-5 py-2.5 rounded-2xl text-sm font-black tracking-wide transition-all duration-200 border"
+                  style={
+                    activeId === lyte.id
+                      ? {
+                          background: lt.bg,
+                          borderColor: `${lt.accent}66`,
+                          color: lt.accent,
+                          boxShadow: `0 0 18px rgba(${lt.rgb},0.22)`,
+                        }
+                      : {
+                          background: 'rgba(15,23,42,0.6)',
+                          borderColor: 'rgba(255,255,255,0.08)',
+                          color: '#64748b',
+                        }
+                  }
+                >
+                  {lyte.name}
+                </motion.button>
+              )
+            })}
           </div>
         </div>
 
@@ -423,13 +450,13 @@ export default function LytesOut() {
               </div>
 
               <div className="flex items-center gap-5">
-                <LabVial meta={meta} value={parsedValue} glowState={analysis.glowState} />
+                <LabVial meta={{ ...meta, accentColor: lt.accent }} value={parsedValue} glowState={analysis.glowState} />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-baseline gap-1.5">
                     <AnimatedValue value={parsedValue} meta={meta} />
                     <span className="text-xs font-bold text-slate-500">{meta.unit}</span>
                   </div>
-                  <div className="mt-3 flex justify-between text-[10px] font-bold tabular-nums text-slate-600">
+                  <div className="mt-3 flex justify-between text-[10px] font-bold tabular-nums text-slate-400">
                     <span>{meta.inputMin}</span>
                     <span>{meta.inputMax}</span>
                   </div>
@@ -492,10 +519,10 @@ export default function LytesOut() {
             onClick={handleCopy}
             className="w-full flex items-center justify-center gap-2.5 rounded-[1.8rem] border px-5 py-4 text-sm font-black transition-all active:scale-[0.98] mb-5"
             style={{
-              background: 'linear-gradient(135deg, rgba(16,185,129,0.22), rgba(52,211,153,0.14))',
-              borderColor: 'rgba(16,185,129,0.34)',
-              color: '#6ee7b7',
-              boxShadow: '0 0 28px rgba(16,185,129,0.14)',
+              background: 'linear-gradient(135deg, rgba(252,211,77,0.24), rgba(252,211,77,0.14))',
+              borderColor: 'rgba(252,211,77,0.38)',
+              color: '#fcd34d',
+              boxShadow: '0 0 28px rgba(252,211,77,0.14)',
             }}
           >
             {copied ? <Check size={18} /> : <Copy size={18} />}
@@ -567,9 +594,9 @@ export default function LytesOut() {
                   <span
                     className="rounded-full px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.18em]"
                     style={{
-                      background: meta.accentBg,
-                      color: meta.accentColor,
-                      border: `1px solid ${meta.accentBorder}`,
+                      background: lt.bg,
+                      color: lt.accent,
+                      border: `1px solid ${lt.border}`,
                     }}
                   >
                     {meta.name} · {rawValue} {meta.unit}
@@ -603,7 +630,7 @@ export default function LytesOut() {
                   {/* Current raw value display */}
                   <div
                     className="mb-3 rounded-2xl border border-white/8 bg-slate-950/80 px-4 py-3 text-center"
-                    style={{ borderColor: meta.accentBorder }}
+                    style={{ borderColor: lt.border }}
                   >
                     <div className="text-[10px] font-bold uppercase tracking-[0.28em] text-slate-500">
                       Enter {meta.fullName} ({meta.unit})
@@ -614,7 +641,7 @@ export default function LytesOut() {
                     </div>
                     <div
                       className="mt-1 h-0.5 rounded-full mx-auto w-16"
-                      style={{ background: meta.accentColor }}
+                      style={{ background: lt.accent }}
                     />
                   </div>
 
@@ -650,9 +677,9 @@ export default function LytesOut() {
                       onClick={() => setNumpadOpen(false)}
                       className="col-span-3 h-12 rounded-[1.4rem] flex items-center justify-center font-black text-sm uppercase tracking-widest mt-1 select-none touch-manipulation"
                       style={{
-                        background: meta.accentBg,
-                        border: `1px solid ${meta.accentBorder}`,
-                        color: meta.accentColor,
+                        background: lt.bg,
+                        border: `1px solid ${lt.border}`,
+                        color: lt.accent,
                       }}
                     >
                       Done · Analyze

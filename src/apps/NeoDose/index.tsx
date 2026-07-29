@@ -18,6 +18,9 @@ import { AppShellHeader } from "../../components/app-shell";
 import { trackToolOpened, trackFirstResultCompleted } from "../../lib/analytics";
 import { BROSELOW_BANDS, getBand, WEIGHT_PRESETS } from "./broselow";
 
+// Tool accent (dose-cyan) — see DESIGN.md One Signal Rule.
+const DOSE_CYAN = "#67E8F9"
+
 // ─── Med Card Component ───────────────────────────────────────────────────────
 interface MedCardProps {
   med: {
@@ -148,7 +151,7 @@ function MedCard({ med, index }: MedCardProps) {
                 </span>
               </div>
               {med.concentration && (
-                <div className="text-[9px] text-slate-600 font-mono mt-0.5">
+                <div className="text-[9px] text-slate-400 font-mono mt-0.5">
                   {med.concentration}
                 </div>
               )}
@@ -296,6 +299,8 @@ export default function NeoDose({ embedded }: { embedded?: boolean } = {}) {
   const meds = useMemo(
     () => [
       // ── FREE TIER ─────────────────────────────────────────────
+      // ponytail: all meds share dose-cyan (One Signal Rule) — cards are
+      // differentiated by container alpha tier, not by hue, per DESIGN.md.
       {
         name: "Epinephrine",
         sub: "Code Blue / PALS",
@@ -306,9 +311,9 @@ export default function NeoDose({ embedded }: { embedded?: boolean } = {}) {
         volume: (weight * 0.01) / 0.1,
         volUnit: "mL",
         concentration: "0.1 mg/mL (1:10,000)",
-        accent: "#ef4444",
-        accentBg: "rgba(239,68,68,0.08)",
-        accentBorder: "rgba(239,68,68,0.3)",
+        accent: DOSE_CYAN,
+        accentBg: "rgba(103,232,249,0.08)",
+        accentBorder: "rgba(103,232,249,0.32)",
         pulse: true,
       },
       {
@@ -320,9 +325,9 @@ export default function NeoDose({ embedded }: { embedded?: boolean } = {}) {
         unit: "J",
         volume: null,
         volUnit: "",
-        accent: "#f59e0b",
-        accentBg: "rgba(245,158,11,0.08)",
-        accentBorder: "rgba(245,158,11,0.3)",
+        accent: DOSE_CYAN,
+        accentBg: "rgba(103,232,249,0.11)",
+        accentBorder: "rgba(103,232,249,0.36)",
       },
       {
         name: "Fluid Bolus",
@@ -333,9 +338,9 @@ export default function NeoDose({ embedded }: { embedded?: boolean } = {}) {
         unit: "mL",
         volume: null,
         volUnit: "",
-        accent: "#3b82f6",
-        accentBg: "rgba(59,130,246,0.08)",
-        accentBorder: "rgba(59,130,246,0.3)",
+        accent: DOSE_CYAN,
+        accentBg: "rgba(103,232,249,0.14)",
+        accentBorder: "rgba(103,232,249,0.4)",
       },
       // ── PRO TIER (locked) ──────────────────────────────────────
       {
@@ -348,9 +353,9 @@ export default function NeoDose({ embedded }: { embedded?: boolean } = {}) {
         volume: (weight * 5) / 50,
         volUnit: "mL",
         concentration: "50 mg/mL",
-        accent: "#a855f7",
-        accentBg: "rgba(168,85,247,0.08)",
-        accentBorder: "rgba(168,85,247,0.3)",
+        accent: DOSE_CYAN,
+        accentBg: "rgba(103,232,249,0.08)",
+        accentBorder: "rgba(103,232,249,0.32)",
         locked: true,
       },
       {
@@ -363,9 +368,9 @@ export default function NeoDose({ embedded }: { embedded?: boolean } = {}) {
         volume: Math.max(weight * 0.02, 0.1) / 0.1,
         volUnit: "mL",
         concentration: "0.1 mg/mL",
-        accent: "#06b6d4",
-        accentBg: "rgba(6,182,212,0.08)",
-        accentBorder: "rgba(6,182,212,0.3)",
+        accent: DOSE_CYAN,
+        accentBg: "rgba(103,232,249,0.11)",
+        accentBorder: "rgba(103,232,249,0.36)",
         locked: true,
       },
       {
@@ -377,9 +382,9 @@ export default function NeoDose({ embedded }: { embedded?: boolean } = {}) {
         unit: "mL",
         volume: null,
         volUnit: "",
-        accent: "#10b981",
-        accentBg: "rgba(16,185,129,0.08)",
-        accentBorder: "rgba(16,185,129,0.3)",
+        accent: DOSE_CYAN,
+        accentBg: "rgba(103,232,249,0.14)",
+        accentBorder: "rgba(103,232,249,0.4)",
         locked: true,
       },
     ],
@@ -403,13 +408,12 @@ export default function NeoDose({ embedded }: { embedded?: boolean } = {}) {
         animate={{ borderBottomColor: band.border }}
         style={{ borderBottom: `1px solid ${band.border}` }}
       >
-        {/* Ambient glow behind header */}
-        <motion.div
+        {/* Ambient glow behind header — tool accent, not Broselow-band (page chrome, not device data) */}
+        <div
           className="absolute inset-0 pointer-events-none"
-          animate={{
-            background: `radial-gradient(ellipse 70% 90% at 50% 0%, ${band.color}22 0%, transparent 80%)`,
+          style={{
+            background: `radial-gradient(ellipse 70% 90% at 50% 0%, ${DOSE_CYAN}1f 0%, transparent 80%)`,
           }}
-          transition={{ duration: 0.6 }}
         />
 
         {/* Weight display + slider */}
@@ -537,7 +541,7 @@ export default function NeoDose({ embedded }: { embedded?: boolean } = {}) {
                 />
                 {band.label} ZONE · {band.min}–{band.max} kg
               </motion.div>
-              <span className="text-[10px] text-slate-600 font-semibold">
+              <span className="text-[10px] text-slate-400 font-semibold">
                 Broselow Tape
               </span>
             </div>

@@ -6,9 +6,11 @@ interface NumpadProps {
   onBackspace: () => void
   onNext: () => void
   nextLabel?: string
+  /** Caller's tool accent classes for the primary "next" button, e.g. "bg-orange-500/10 border-orange-500/30 text-orange-400 active:bg-orange-500/20" */
+  accentClassName: string
 }
 
-export function Numpad({ onKeyPress, onBackspace, onNext, nextLabel = "Next Field" }: NumpadProps) {
+export function Numpad({ onKeyPress, onBackspace, onNext, nextLabel = "Next Field", accentClassName }: NumpadProps) {
   const triggerHaptic = () => {
     if (typeof navigator !== 'undefined' && navigator.vibrate) {
       navigator.vibrate(10)
@@ -54,7 +56,7 @@ export function Numpad({ onKeyPress, onBackspace, onNext, nextLabel = "Next Fiel
       <motion.button
         whileTap={{ scale: 0.9 }}
         onClick={handleNext}
-        className="col-span-3 glass py-4 rounded-full flex items-center justify-center bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 font-bold active:bg-cyan-500/20 select-none mt-2 touch-manipulation"
+        className={`col-span-3 glass py-4 rounded-full flex items-center justify-center border font-bold select-none mt-2 touch-manipulation ${accentClassName}`}
       >
         {nextLabel}
       </motion.button>

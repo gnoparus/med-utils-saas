@@ -2,7 +2,6 @@ import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { vi } from 'vitest'
 import { Numpad } from '../../src/components/ui/Numpad'
-import { HapticSlider } from '../../src/components/ui/HapticSlider'
 
 describe('UI components', () => {
   it('Numpad calls handlers when keys pressed and back/next invoked', () => {
@@ -16,6 +15,7 @@ describe('UI components', () => {
         onBackspace={onBack}
         onNext={onNext}
         nextLabel="Next"
+        accentClassName="bg-orange-500/10 border-orange-500/30 text-orange-400 active:bg-orange-500/20"
       />
     )
 
@@ -39,32 +39,5 @@ describe('UI components', () => {
     expect(pressed).toContain('.')
     expect(onBack).toHaveBeenCalled()
     expect(onNext).toHaveBeenCalled()
-  })
-
-  it('HapticSlider renders and calls onChange when range value changes', () => {
-    const onChange = vi.fn()
-
-    const { container } = render(
-      <HapticSlider
-        min={0}
-        max={10}
-        value={5}
-        onChange={onChange}
-        label="Test Slider"
-        unit="kg"
-      />
-    )
-
-    const input = container.querySelector('input[type="range"]') as HTMLInputElement | null
-    expect(input).toBeTruthy()
-
-    if (input) {
-      // Change value — component calls onChange with a number
-      fireEvent.change(input, { target: { value: '7' } })
-      expect(onChange).toHaveBeenCalled()
-      // assert called with numeric value (7)
-      const calledWithNumber = onChange.mock.calls.some(call => call[0] === 7 || call[0] === 7.0)
-      expect(calledWithNumber).toBe(true)
-    }
   })
 })

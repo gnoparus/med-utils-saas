@@ -121,7 +121,7 @@ export function LabVial({
         <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">
           {meta.normalLow}–{meta.normalHigh}
         </div>
-        <div className="text-[9px] font-semibold uppercase tracking-[0.16em] text-slate-600">Normal</div>
+        <div className="text-[9px] font-semibold uppercase tracking-[0.16em] text-slate-400">Normal</div>
       </div>
     </div>
   )

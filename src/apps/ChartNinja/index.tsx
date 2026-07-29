@@ -48,12 +48,27 @@ function hasAnyFieldValue(fieldValues: Record<string, Record<string, string | st
   return Object.values(fieldValues).some((template) => Object.keys(template).length > 0)
 }
 
+const NOTES_CORAL = '#FCA5A5'
+const NOTES_CORAL_RGB = '252,165,165'
+
+// ponytail: keys (sky/purple/red/...) are kept only as template-identity
+// lookup keys — every value now shares notes-coral (One Signal Rule);
+// templates are differentiated by container alpha, never hue.
+function coralTint(alpha: number) {
+  return {
+    accent: NOTES_CORAL,
+    rgb: NOTES_CORAL_RGB,
+    panel: `rgba(${NOTES_CORAL_RGB},${alpha})`,
+    border: `rgba(${NOTES_CORAL_RGB},${(alpha + 0.16).toFixed(2)})`,
+  }
+}
+
 const GLOW = {
-  sky:    { accent: '#38bdf8', rgb: '56,189,248',   panel: 'rgba(56,189,248,0.12)',   border: 'rgba(56,189,248,0.28)'   },
-  purple: { accent: '#a78bfa', rgb: '167,139,250',  panel: 'rgba(167,139,250,0.12)', border: 'rgba(167,139,250,0.28)'  },
-  red:    { accent: '#fb7185', rgb: '251,113,133',  panel: 'rgba(251,113,133,0.12)', border: 'rgba(251,113,133,0.28)'  },
-  green:  { accent: '#34d399', rgb: '52,211,153',   panel: 'rgba(52,211,153,0.12)',  border: 'rgba(52,211,153,0.28)'   },
-  orange: { accent: '#f97316', rgb: '249,115,22',   panel: 'rgba(249,115,22,0.12)',  border: 'rgba(249,115,22,0.28)'   },
+  sky:    coralTint(0.09),
+  purple: coralTint(0.13),
+  red:    coralTint(0.17),
+  green:  coralTint(0.21),
+  orange: coralTint(0.25),
 } as const
 
 type GlowKey = keyof typeof GLOW
@@ -79,6 +94,7 @@ function TemplateSelector({
     <div className="flex gap-2.5 overflow-x-auto pb-1 px-6 scrollbar-none snap-x snap-mandatory">
       {NOTE_TEMPLATES.map((t, i) => {
         const isActive = t.id === selected.id
+        const glow = GLOW[TEMPLATE_GLOW[t.id] ?? 'sky']
         return (
           <motion.button
             key={t.id}
@@ -89,15 +105,15 @@ function TemplateSelector({
             onClick={() => { onSelect(t); triggerHaptic(8) }}
             className="shrink-0 snap-start flex flex-col items-center gap-1.5 px-4 py-3 rounded-2xl border transition-all duration-200"
             style={{
-              background: isActive ? t.accentBg : 'rgba(255,255,255,0.03)',
-              borderColor: isActive ? t.accentBorder : 'rgba(255,255,255,0.08)',
+              background: isActive ? glow.panel : 'rgba(255,255,255,0.03)',
+              borderColor: isActive ? glow.border : 'rgba(255,255,255,0.08)',
               minWidth: 72,
             }}
           >
             <span className="text-xl leading-none">{t.icon}</span>
             <span
               className="text-[10px] font-black uppercase tracking-[0.18em] leading-none"
-              style={{ color: isActive ? t.accent : 'rgba(255,255,255,0.38)' }}
+              style={{ color: isActive ? glow.accent : 'rgba(255,255,255,0.38)' }}
             >
               {t.shortLabel}
             </span>
@@ -189,6 +205,7 @@ function ChipsFieldCard({
   index: number
 }) {
   const [expanded, setExpanded] = useState(index < 2)
+  const t = coralTint(0.08 + (index % 5) * 0.04)
 
   return (
     <motion.div
@@ -198,7 +215,7 @@ function ChipsFieldCard({
       className="rounded-3xl border overflow-hidden"
       style={{
         background: 'rgba(2,6,23,0.72)',
-        borderColor: value ? field.accentBorder : 'rgba(255,255,255,0.08)',
+        borderColor: value ? t.border : 'rgba(255,255,255,0.08)',
       }}
     >
       {/* Header */}
@@ -209,14 +226,14 @@ function ChipsFieldCard({
         <div className="flex items-center gap-3">
           <div
             className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl text-xs font-black"
-            style={{ background: field.accentBg, color: field.accent }}
+            style={{ background: t.panel, color: t.accent }}
           >
             {field.shortLabel.slice(0, 2)}
           </div>
           <div className="text-left">
             <div className="text-sm font-black text-slate-100">{field.label}</div>
             {field.required && (
-              <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-600">Required</div>
+              <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-400">Required</div>
             )}
           </div>
         </div>
@@ -226,7 +243,7 @@ function ChipsFieldCard({
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               className="rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] max-w-25 truncate"
-              style={{ background: field.accentBg, color: field.accent, border: `1px solid ${field.accentBorder}` }}
+              style={{ background: t.panel, color: t.accent, border: `1px solid ${t.border}` }}
             >
               {field.options?.find(o => o.text === value)?.label ?? value}
             </motion.div>
@@ -258,12 +275,12 @@ function ChipsFieldCard({
                     }}
                     className="flex items-center gap-1.5 rounded-2xl border px-3.5 py-2 text-xs font-bold transition-all duration-150"
                     style={{
-                      background: isSelected ? field.accentBg : 'rgba(255,255,255,0.04)',
-                      borderColor: isSelected ? field.accentBorder : 'rgba(255,255,255,0.09)',
-                      color: isSelected ? field.accent : 'rgba(255,255,255,0.58)',
+                      background: isSelected ? t.panel : 'rgba(255,255,255,0.04)',
+                      borderColor: isSelected ? t.border : 'rgba(255,255,255,0.09)',
+                      color: isSelected ? t.accent : 'rgba(255,255,255,0.58)',
                     }}
                   >
-                    {isSelected && <Check size={11} strokeWidth={3} style={{ color: field.accent }} />}
+                    {isSelected && <Check size={11} strokeWidth={3} style={{ color: t.accent }} />}
                     {opt.label}
                   </motion.button>
                 )
@@ -290,6 +307,7 @@ function MultiChipsFieldCard({
   index: number
 }) {
   const [expanded, setExpanded] = useState(false)
+  const t = coralTint(0.08 + (index % 5) * 0.04)
 
   const toggle = (text: string) => {
     const next = value.includes(text)
@@ -307,7 +325,7 @@ function MultiChipsFieldCard({
       className="rounded-3xl border overflow-hidden"
       style={{
         background: 'rgba(2,6,23,0.72)',
-        borderColor: value.length > 0 ? field.accentBorder : 'rgba(255,255,255,0.08)',
+        borderColor: value.length > 0 ? t.border : 'rgba(255,255,255,0.08)',
       }}
     >
       <button
@@ -317,20 +335,20 @@ function MultiChipsFieldCard({
         <div className="flex items-center gap-3">
           <div
             className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl text-xs font-black"
-            style={{ background: field.accentBg, color: field.accent }}
+            style={{ background: t.panel, color: t.accent }}
           >
             {field.shortLabel.slice(0, 2)}
           </div>
           <div className="text-left">
             <div className="text-sm font-black text-slate-100">{field.label}</div>
-            <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-600">Multi-select</div>
+            <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-400">Multi-select</div>
           </div>
         </div>
         <div className="flex items-center gap-2.5">
           {value.length > 0 && (
             <div
               className="flex h-6 w-6 items-center justify-center rounded-full text-xs font-black"
-              style={{ background: field.accentBg, color: field.accent, border: `1px solid ${field.accentBorder}` }}
+              style={{ background: t.panel, color: t.accent, border: `1px solid ${t.border}` }}
             >
               {value.length}
             </div>
@@ -358,12 +376,12 @@ function MultiChipsFieldCard({
                     onClick={() => toggle(opt.text)}
                     className="flex items-center gap-1.5 rounded-2xl border px-3.5 py-2 text-xs font-bold transition-all duration-150"
                     style={{
-                      background: isSelected ? field.accentBg : 'rgba(255,255,255,0.04)',
-                      borderColor: isSelected ? field.accentBorder : 'rgba(255,255,255,0.09)',
-                      color: isSelected ? field.accent : 'rgba(255,255,255,0.58)',
+                      background: isSelected ? t.panel : 'rgba(255,255,255,0.04)',
+                      borderColor: isSelected ? t.border : 'rgba(255,255,255,0.09)',
+                      color: isSelected ? t.accent : 'rgba(255,255,255,0.58)',
                     }}
                   >
-                    {isSelected && <Check size={11} strokeWidth={3} style={{ color: field.accent }} />}
+                    {isSelected && <Check size={11} strokeWidth={3} style={{ color: t.accent }} />}
                     {opt.label}
                   </motion.button>
                 )
@@ -467,16 +485,16 @@ function SnippetPanel({
           className="flex w-full items-center justify-center gap-2.5 rounded-[1.6rem] border px-5 py-3.5 text-sm font-black transition-all"
           style={{
             background: copied
-              ? 'linear-gradient(135deg, rgba(52,211,153,0.32), rgba(16,185,129,0.18))'
+              ? `linear-gradient(135deg, rgba(${NOTES_CORAL_RGB},0.4), rgba(${NOTES_CORAL_RGB},0.24))`
               : complete
                 ? `linear-gradient(135deg, rgba(${glow.rgb},0.22), rgba(${glow.rgb},0.12))`
                 : 'rgba(255,255,255,0.04)',
             borderColor: copied
-              ? 'rgba(52,211,153,0.4)'
+              ? `rgba(${NOTES_CORAL_RGB},0.5)`
               : complete
                 ? glow.border
                 : 'rgba(255,255,255,0.08)',
-            color: copied ? '#34d399' : complete ? glow.accent : 'rgba(255,255,255,0.25)',
+            color: copied ? NOTES_CORAL : complete ? glow.accent : 'rgba(255,255,255,0.25)',
             cursor: complete ? 'pointer' : 'not-allowed',
           }}
         >
@@ -627,7 +645,7 @@ export default function ChartNinja() {
           exit={{ opacity: 0, x: -12 }}
           transition={{ duration: 0.2 }}
           className="shrink-0 mx-6 mb-3 rounded-2xl border px-4 py-3 flex items-center gap-3"
-          style={{ background: selectedTemplate.accentBg, borderColor: selectedTemplate.accentBorder }}
+          style={{ background: GLOW[glowKey].panel, borderColor: GLOW[glowKey].border }}
         >
           <span className="text-2xl">{selectedTemplate.icon}</span>
           <div>
