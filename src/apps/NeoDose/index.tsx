@@ -234,9 +234,16 @@ export default function NeoDose({ embedded }: { embedded?: boolean } = {}) {
     setWeight(v);
   };
 
-  const commitWeight = (str: string) => {
+  // Clamps to the supported range and commits. Returns the clamped display
+  // string when the typed value fell outside 1-50kg, so the numpad display
+  // never shows a number that doesn't match the weight the med cards used
+  // (typing "99" must not silently dose for the last-valid single digit).
+  const commitWeight = (str: string): string | null => {
     const parsed = parseFloat(str);
-    if (!isNaN(parsed) && parsed >= 1 && parsed <= 50) setWeight(parsed);
+    if (isNaN(parsed)) return null;
+    const clamped = Math.min(50, Math.max(1, parsed));
+    setWeight(clamped);
+    return clamped === parsed ? null : String(clamped);
   };
 
   // First keypress after opening the numpad starts a fresh entry rather than
@@ -251,8 +258,7 @@ export default function NeoDose({ embedded }: { embedded?: boolean } = {}) {
         next = base === "" || base === "0" ? k : base + k;
         if (next.length > 4) return base;
       }
-      commitWeight(next);
-      return next;
+      return commitWeight(next) ?? next;
     });
   };
 
@@ -260,8 +266,7 @@ export default function NeoDose({ embedded }: { embedded?: boolean } = {}) {
     setRawWeight((prev) => {
       const base = prev ?? "";
       const next = base.length > 1 ? base.slice(0, -1) : "";
-      commitWeight(next);
-      return next;
+      return commitWeight(next) ?? next;
     });
   };
 

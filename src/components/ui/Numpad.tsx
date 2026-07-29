@@ -56,6 +56,7 @@ export function Numpad({ onKeyPress, onBackspace, onNext, nextLabel = "Next Fiel
       <motion.button
         whileTap={{ scale: 0.9 }}
         onClick={handleBack}
+        aria-label="Backspace"
         className="glass h-12 rounded-2xl flex items-center justify-center bg-red-500/10 border border-red-500/30 text-red-400 active:bg-red-500/20 select-none touch-manipulation"
       >
         <Delete />
