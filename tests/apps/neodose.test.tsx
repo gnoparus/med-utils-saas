@@ -79,4 +79,22 @@ describe("NeoDose numpad", () => {
     expect(entryPanel.textContent).toContain("5kg"); // fresh entry, not "25"
     expect(entryPanel.textContent).not.toContain("25");
   });
+
+  it("resets the manual entry buffer when a weight preset is picked, so typing doesn't append onto a stale digit", () => {
+    render(
+      <MemoryRouter>
+        <NeoDose />
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(screen.getByText("10.0").closest("button")!);
+    fireEvent.click(screen.getByRole("button", { name: "2" }));
+
+    fireEvent.click(screen.getByRole("button", { name: "20 kg" }));
+    fireEvent.click(screen.getByRole("button", { name: "5" }));
+
+    const entryPanel = screen.getByText("Manual Weight Entry").parentElement!;
+    expect(entryPanel.textContent).toContain("5kg"); // fresh entry, not "25"
+    expect(entryPanel.textContent).not.toContain("25");
+  });
 });

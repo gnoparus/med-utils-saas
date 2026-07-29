@@ -226,15 +226,20 @@ export default function NeoDose({ embedded }: { embedded?: boolean } = {}) {
     setRawWeight(null);
   };
 
+  // Any control that sets weight from OUTSIDE the numpad (slider, presets)
+  // must also clear rawWeight, or a digit typed afterward appends onto a
+  // now-stale manual-entry string instead of starting fresh.
+  const setWeightExternally = (v: number) => {
+    setWeight(v);
+    setRawWeight(null);
+  };
+
   const handleSlider = (v: number) => {
     if (!firstResultFired.current) {
       firstResultFired.current = true;
       trackFirstResultCompleted('dose');
     }
-    setWeight(v);
-    // Dragging the slider while a manual entry is in progress must not let a
-    // later digit press append onto the now-stale typed string.
-    setRawWeight(null);
+    setWeightExternally(v);
   };
 
   // Clamps to the supported range and commits. Returns the clamped display
@@ -441,7 +446,7 @@ export default function NeoDose({ embedded }: { embedded?: boolean } = {}) {
                 key={w}
                 whileTap={{ scale: 0.88 }}
                 onClick={() => {
-                  setWeight(w);
+                  setWeightExternally(w);
                   triggerHaptic(10);
                 }}
                 className="shrink-0 px-3 py-1.5 rounded-full text-xs font-bold transition-all"
