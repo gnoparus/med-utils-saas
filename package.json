@@ -14,7 +14,7 @@
     "test:ci": "vitest --run --reporter=dot --coverage"
   },
   "dependencies": {
-    "echarts": "^6.0.0",
+    "echarts": "^6.1.0",
     "framer-motion": "^12.38.0",
     "lucide-react": "^1.8.0",
     "react": "^19.2.4",
